@@ -11,6 +11,7 @@ import com.projectmirror.data.local.entity.ForeshadowEntity
 import com.projectmirror.data.local.entity.SaveSlotEntity
 import com.projectmirror.domain.model.ChoiceOption
 import com.projectmirror.domain.model.DispositionWeights
+import com.projectmirror.domain.model.SaveProgress
 import com.projectmirror.domain.model.WorldFlags
 import com.projectmirror.domain.model.applyFlagUpdates
 import com.projectmirror.domain.model.dispositionAmbientDelta
@@ -41,10 +42,23 @@ class GameStateRepository @Inject constructor(
 
     val dialogueLog = dialogueLogDao.observeAll()
 
+    val hasProgress = playerPreferences.hasProgress
+
     suspend fun resetForNewGame() {
         _worldFlags.value = WorldFlags()
         playerPreferences.updateDisposition(DispositionWeights())
         dialogueLogDao.clearAll()
+        saveSlotDao.deleteSlot(0)
+        playerPreferences.clearProgress()
+    }
+
+    suspend fun restoreAutoSave(): SaveProgress? {
+        val slot = saveSlotDao.getSlot(0) ?: return null
+        val progress = playerPreferences.getProgress() ?: SaveProgress(slot.chapterId, slot.sceneId)
+        _worldFlags.value = runCatching {
+            json.decodeFromString<WorldFlags>(slot.snapshotJson)
+        }.getOrDefault(WorldFlags())
+        return progress
     }
 
     suspend fun applyChoice(

@@ -14,6 +14,9 @@ interface SaveSlotDao {
     @Query("SELECT * FROM save_slots WHERE slot = :slot LIMIT 1")
     suspend fun getSlot(slot: Int): SaveSlotEntity?
 
+    @Query("DELETE FROM save_slots WHERE slot = :slot")
+    suspend fun deleteSlot(slot: Int)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(slot: SaveSlotEntity)
 }

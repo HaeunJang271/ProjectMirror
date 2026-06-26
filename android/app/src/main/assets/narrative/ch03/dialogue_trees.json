@@ -1,0 +1,69 @@
+{
+  "chapterId": "ch03",
+  "scenes": [
+    {
+      "id": "c03_intro",
+      "type": "narrative",
+      "nextSceneId": "c03_mirror",
+      "lines": [
+        { "type": "narration", "text": "비가 그친 자리에 문이 있다.\n\n열린다.\n\n소리 없이." },
+        { "type": "narration", "text": "공기가 바뀐다.\n\n젖지 않은 복도." }
+      ]
+    },
+    {
+      "id": "c03_mirror",
+      "type": "dialogue",
+      "speaker": "거울",
+      "nextSceneId": "c03_gaon",
+      "lines": [
+        { "type": "dialogue", "speaker": "거울", "text": "……왜 왔어." },
+        { "type": "dialogue", "speaker": "거울", "text": "질문하지 않으면\n\n말하지 않아." }
+      ]
+    },
+    {
+      "id": "c03_gaon",
+      "type": "dialogue",
+      "speaker": "가온",
+      "lines": [
+        { "type": "dialogue", "speaker": "가온", "text": "……또 왔네요." },
+        { "type": "narration", "text": "창은 여전히 닫혀 있다." },
+        {
+          "type": "dialogue",
+          "speaker": "가온",
+          "text": "……그 깃털.\n\n아직 있어요?",
+          "requireFlag": { "key": "f005_feather_found", "equals": "true" }
+        }
+      ],
+      "choices": [
+        {
+          "id": "CHO-C03-WINDOW-A",
+          "label": "창문을 열어줄까 물어본다",
+          "nextSceneId": "c03_end",
+          "dispositionDelta": { "empathy": 5, "courage": 3 },
+          "flagUpdates": { "gaon_window_asked_ch3": "true" },
+          "resultLines": [
+            { "type": "dialogue", "speaker": "가온", "text": "……지금은.\n\n아직이에요." }
+          ]
+        },
+        {
+          "id": "CHO-C03-WINDOW-B",
+          "label": "조용히 앉는다",
+          "nextSceneId": "c03_end",
+          "dispositionDelta": { "empathy": 4, "order": 3 },
+          "flagUpdates": { "gaon_silent_ch3": "true" },
+          "resultLines": [
+            { "type": "narration", "text": "새 소리가 한 번 났다.\n\n창 너머인지, 기억인지 모른다." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c03_end",
+      "type": "narrative",
+      "chapterComplete": true,
+      "lines": [
+        { "type": "narration", "text": "복도 끝.\n\n또 다른 문." }
+      ]
+    }
+  ]
+}

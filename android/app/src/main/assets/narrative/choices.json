@@ -132,6 +132,18 @@
       "chapterId": "ch02",
       "sceneId": "c02_gap",
       "label": "손을 담근다"
+    },
+    {
+      "id": "CHO-C03-WINDOW-A",
+      "chapterId": "ch03",
+      "sceneId": "c03_gaon",
+      "label": "창문을 열어줄까 물어본다"
+    },
+    {
+      "id": "CHO-C03-WINDOW-B",
+      "chapterId": "ch03",
+      "sceneId": "c03_gaon",
+      "label": "조용히 앉는다"
     }
   ]
 }

@@ -224,13 +224,15 @@ class NarrativeViewModel @Inject constructor(
     private fun chapterCardTitle(loaded: NarrativeScene): String? = when (loaded.id) {
         "p06" -> if (loaded.chapterComplete) "Chapter 1\n첫 반사" else null
         "c01_end" -> if (loaded.chapterComplete) "Chapter 2\n비의 자리" else null
-        "c02_end" -> if (loaded.chapterComplete) "Chapter 3\n(준비 중)" else null
+        "c02_end" -> if (loaded.chapterComplete) "Chapter 3\n깃털의 방" else null
+        "c03_end" -> if (loaded.chapterComplete) "Chapter 4\n(준비 중)" else null
         else -> null
     }
 
     private fun nextChapter(sceneId: String): Pair<String, String>? = when (chapterId to sceneId) {
         "prologue" to "p06" -> "ch01" to "c01_hub"
         "ch01" to "c01_end" -> "ch02" to "c02_intro"
+        "ch02" to "c02_end" -> "ch03" to "c03_intro"
         else -> null
     }
 }

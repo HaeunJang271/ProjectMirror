@@ -4,6 +4,8 @@ object Routes {
     const val TITLE = "title"
     const val NARRATIVE = "{chapterId}/scene/{sceneId}"
     const val JOURNAL = "journal"
+    const val PAUSE = "pause"
+    const val SETTINGS = "settings"
     const val CHAPTER_ID = "chapterId"
     const val SCENE_ID = "sceneId"
 
