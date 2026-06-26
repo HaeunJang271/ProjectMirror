@@ -10,6 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.projectmirror.ui.components.AmbientBackground
+import com.projectmirror.ui.screens.JournalScreen
 import com.projectmirror.ui.screens.NarrativeScreen
 import com.projectmirror.ui.screens.TitleScreen
 import com.projectmirror.ui.screens.narrative.NarrativeViewModel
@@ -55,12 +57,19 @@ fun MirrorNavHost() {
                 }
             }
 
-            NarrativeScreen(
-                state = state,
-                onAdvance = { viewModel.advance() },
-                onChoice = { viewModel.selectChoice(it) },
-                onExit = { viewModel.selectExit(it) },
-            )
+            AmbientBackground(ambientShift = state.ambientShift) {
+                NarrativeScreen(
+                    state = state,
+                    onAdvance = { viewModel.advance() },
+                    onChoice = { viewModel.selectChoice(it) },
+                    onExit = { viewModel.selectExit(it) },
+                    onOpenJournal = { navController.navigate(Routes.JOURNAL) },
+                )
+            }
+        }
+
+        composable(Routes.JOURNAL) {
+            JournalScreen(onBack = { navController.popBackStack() })
         }
     }
 }

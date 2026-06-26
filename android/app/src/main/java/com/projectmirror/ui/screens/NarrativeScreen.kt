@@ -35,8 +35,13 @@ fun NarrativeScreen(
     onAdvance: () -> Unit,
     onChoice: (ChoiceOption) -> Unit,
     onExit: (SceneExit) -> Unit,
+    onOpenJournal: () -> Unit = {},
 ) {
-    when {
+    val showJournalButton = !state.isLoading && state.error == null &&
+        state.phase != NarrativePhase.CHAPTER_CARD
+
+    Box(Modifier.fillMaxSize()) {
+        when {
         state.isLoading -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = MirrorColors.SpeakerName)
@@ -150,6 +155,20 @@ fun NarrativeScreen(
                         ),
                 )
             }
+        }
+        }
+
+        if (showJournalButton) {
+            Text(
+                text = "일기",
+                style = MaterialTheme.typography.labelLarge,
+                color = MirrorColors.Narration,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .zIndex(2f)
+                    .clickable(onClick = onOpenJournal)
+                    .padding(horizontal = 24.dp, vertical = 20.dp),
+            )
         }
     }
 }

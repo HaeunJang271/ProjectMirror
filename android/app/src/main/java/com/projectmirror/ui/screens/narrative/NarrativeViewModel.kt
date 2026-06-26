@@ -6,8 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.projectmirror.data.repository.GameStateRepository
 import com.projectmirror.data.repository.NarrativeRepository
 import com.projectmirror.domain.model.ChoiceOption
+import com.projectmirror.domain.model.NarrativeLine
 import com.projectmirror.domain.model.NarrativeScene
 import com.projectmirror.domain.model.SceneExit
+import com.projectmirror.domain.model.filterByFlags
+import com.projectmirror.domain.model.totalAmbientShift
 import com.projectmirror.domain.usecase.ApplyChoiceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,7 +39,7 @@ data class NarrativeUiState(
     val chapterId: String = "prologue",
     val sceneId: String = "p01",
     val speaker: String? = null,
-    val displayLines: List<com.projectmirror.domain.model.NarrativeLine> = emptyList(),
+    val displayLines: List<NarrativeLine> = emptyList(),
     val lineIndex: Int = 0,
     val choices: List<ChoiceOption> = emptyList(),
     val exits: List<SceneExit> = emptyList(),
@@ -44,8 +47,9 @@ data class NarrativeUiState(
     val isLoading: Boolean = true,
     val error: String? = null,
     val chapterCardTitle: String? = null,
+    val ambientShift: Float = 0f,
 ) {
-    val currentLine: com.projectmirror.domain.model.NarrativeLine? = displayLines.getOrNull(lineIndex)
+    val currentLine: NarrativeLine? = displayLines.getOrNull(lineIndex)
     val hasNextLine: Boolean = lineIndex < displayLines.lastIndex
 }
 
@@ -72,6 +76,13 @@ class NarrativeViewModel @Inject constructor(
     val navEvents: SharedFlow<NarrativeNavEvent> = _navEvents.asSharedFlow()
 
     init {
+        viewModelScope.launch {
+            gameStateRepository.worldFlags.collect { flags ->
+                _uiState.update {
+                    it.copy(ambientShift = flags.totalAmbientShift(chapterId))
+                }
+            }
+        }
         loadScene(currentSceneId)
     }
 
@@ -89,11 +100,13 @@ class NarrativeViewModel @Inject constructor(
     }
 
     private suspend fun applyScene(loaded: NarrativeScene) {
-        scene = loaded
+        val flags = gameStateRepository.worldFlags.value
+        val filteredLines = loaded.lines.filterByFlags(flags)
+        scene = loaded.copy(lines = filteredLines)
         currentSceneId = loaded.id
         afterResultSceneId = null
         val phase = when {
-            loaded.type == "hub" && loaded.lines.isEmpty() && loaded.exits.isNotEmpty() ->
+            loaded.type == "hub" && filteredLines.isEmpty() && loaded.exits.isNotEmpty() ->
                 NarrativePhase.HUB_EXITS
             else -> NarrativePhase.LINES
         }
@@ -101,7 +114,7 @@ class NarrativeViewModel @Inject constructor(
             it.copy(
                 sceneId = loaded.id,
                 speaker = loaded.speaker,
-                displayLines = loaded.lines,
+                displayLines = filteredLines,
                 lineIndex = 0,
                 choices = loaded.choices,
                 exits = loaded.exits,
@@ -109,8 +122,10 @@ class NarrativeViewModel @Inject constructor(
                 isLoading = false,
                 error = null,
                 chapterCardTitle = chapterCardTitle(loaded),
+                ambientShift = flags.totalAmbientShift(chapterId),
             )
         }
+        filteredLines.firstOrNull()?.let { logLine(it) }
         gameStateRepository.autoSave(chapterId, loaded.id)
     }
 
@@ -119,7 +134,9 @@ class NarrativeViewModel @Inject constructor(
         when (state.phase) {
             NarrativePhase.LINES -> {
                 if (state.hasNextLine) {
-                    _uiState.update { it.copy(lineIndex = it.lineIndex + 1) }
+                    val nextIndex = state.lineIndex + 1
+                    state.displayLines.getOrNull(nextIndex)?.let { logLine(it) }
+                    _uiState.update { it.copy(lineIndex = nextIndex) }
                 } else if (afterResultSceneId != null) {
                     goToScene(afterResultSceneId!!)
                     afterResultSceneId = null
@@ -153,12 +170,15 @@ class NarrativeViewModel @Inject constructor(
 
     fun selectChoice(choice: ChoiceOption) {
         viewModelScope.launch {
+            gameStateRepository.logChoice(chapterId, currentSceneId, choice.label)
             applyChoiceUseCase(choice, chapterId, currentSceneId)
             if (choice.resultLines.isNotEmpty()) {
                 afterResultSceneId = choice.nextSceneId
+                val filtered = choice.resultLines.filterByFlags(gameStateRepository.worldFlags.value)
+                filtered.firstOrNull()?.let { logLine(it) }
                 _uiState.update {
                     it.copy(
-                        displayLines = choice.resultLines,
+                        displayLines = filtered,
                         lineIndex = 0,
                         phase = NarrativePhase.LINES,
                         choices = emptyList(),
@@ -181,6 +201,19 @@ class NarrativeViewModel @Inject constructor(
         viewModelScope.launch {
             val loaded = narrativeRepository.loadScene(chapterId, sceneId) ?: return@launch
             applyScene(loaded)
+        }
+    }
+
+    private fun logLine(line: NarrativeLine) {
+        viewModelScope.launch {
+            val speaker = if (line.type == "dialogue") line.speaker ?: scene?.speaker else null
+            gameStateRepository.logDialogue(
+                chapterId = chapterId,
+                sceneId = currentSceneId,
+                lineType = line.type,
+                speaker = speaker,
+                text = line.text,
+            )
         }
     }
 

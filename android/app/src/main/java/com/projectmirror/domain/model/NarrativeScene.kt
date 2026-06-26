@@ -36,6 +36,7 @@ data class NarrativeLine(
     val type: String = "narration",
     val speaker: String? = null,
     val text: String,
+    val requireFlag: FlagCondition? = null,
 )
 
 @Serializable

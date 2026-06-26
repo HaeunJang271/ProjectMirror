@@ -32,4 +32,7 @@ object DatabaseModule {
 
     @Provides
     fun provideForeshadowDao(db: MirrorDatabase) = db.foreshadowDao()
+
+    @Provides
+    fun provideDialogueLogDao(db: MirrorDatabase) = db.dialogueLogDao()
 }

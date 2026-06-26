@@ -27,3 +27,14 @@ data class ForeshadowEntity(
     val state: String,
     val metadata: String?,
 )
+
+@Entity(tableName = "dialogue_log")
+data class DialogueLogEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val chapterId: String,
+    val sceneId: String,
+    val lineType: String,
+    val speaker: String?,
+    val text: String,
+    val timestamp: Long,
+)

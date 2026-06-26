@@ -3,6 +3,7 @@ package com.projectmirror.navigation
 object Routes {
     const val TITLE = "title"
     const val NARRATIVE = "{chapterId}/scene/{sceneId}"
+    const val JOURNAL = "journal"
     const val CHAPTER_ID = "chapterId"
     const val SCENE_ID = "sceneId"
 

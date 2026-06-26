@@ -7,7 +7,22 @@
       "nextSceneId": "c02_segyeol",
       "lines": [
         { "type": "narration", "text": "비가 내린다.\n\n소리는 있다.\n\n몸은 젖지 않는다." },
-        { "type": "narration", "text": "복도가 이어진다.\n\nCh1과 같은 석조인데——\n\n공기가 다르다." }
+        { "type": "narration", "text": "복도가 이어진다.\n\nCh1과 같은 석조인데——\n\n공기가 다르다." },
+        {
+          "type": "narration",
+          "text": "벽을 따라 금색 얇은 선이 이어진다.",
+          "requireFlag": { "key": "f001_crack_state", "equals": "spread" }
+        },
+        {
+          "type": "narration",
+          "text": "거울이 평소보다 많다.\n\n끝없이 비친다.",
+          "requireFlag": { "key": "f001_crack_state", "equals": "intact" }
+        },
+        {
+          "type": "narration",
+          "text": "창문 틈으로 새 소리가 하나 스친다.",
+          "requireFlag": { "key": "f001_crack_state", "equals": "light_line" }
+        }
       ]
     },
     {
@@ -30,7 +45,13 @@
         { "type": "narration", "text": "창문에 서리가 맺혀 있다.\n\n이묵이 숨을 불어넣는다." },
         { "type": "dialogue", "speaker": "이묵", "text": "적어두면 잠깐 남아요." },
         { "type": "narration", "text": "글씨가 서서히 나타났다 사라진다.\n\n\"어제 복도\" 같은 단어." },
-        { "type": "dialogue", "speaker": "이묵", "text": "……비가 오면 사라져요." }
+        { "type": "dialogue", "speaker": "이묵", "text": "……비가 오면 사라져요." },
+        {
+          "type": "dialogue",
+          "speaker": "이묵",
+          "text": "린 씨한테 들었어요.\n\n이름 적는 사람.\n\n……저도 적어봤는데, 이름만 먼저 지워지더라고요.",
+          "requireFlag": { "key": "rin_recorded", "equals": "true" }
+        }
       ],
       "choices": [
         {
@@ -75,7 +96,13 @@
       "speaker": "하린",
       "lines": [
         { "type": "dialogue", "speaker": "하린", "text": "아, 찾았다.\n\n……같이 있었잖아요." },
-        { "type": "dialogue", "speaker": "하린", "text": "아까 복도에서.\n\n당신 손 잡았잖아요." }
+        { "type": "dialogue", "speaker": "하린", "text": "아까 복도에서.\n\n당신 손 잡았잖아요." },
+        {
+          "type": "dialogue",
+          "speaker": "하린",
+          "text": "……깃털.\n\n책상 밑에 있던 거.\n\n기억나요?",
+          "requireFlag": { "key": "f005_feather_found", "equals": "true" }
+        }
       ],
       "choices": [
         {
