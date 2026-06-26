@@ -43,15 +43,20 @@ fun MirrorNavHost() {
                 navArgument(Routes.CHAPTER_ID) { type = NavType.StringType },
                 navArgument(Routes.SCENE_ID) { type = NavType.StringType },
             ),
-        ) {
-            val viewModel: NarrativeViewModel = hiltViewModel()
+        ) { backStackEntry ->
+            // 씬마다 별도 ViewModel — 공유 시 sceneId가 갱신되지 않아 무한 이동 발생
+            val viewModel: NarrativeViewModel = hiltViewModel(backStackEntry)
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             val navEvent by viewModel.navEvent.collectAsStateWithLifecycle()
 
             LaunchedEffect(navEvent) {
                 when (val event = navEvent) {
                     is NarrativeNavEvent.Scene -> {
-                        navController.navigate(Routes.narrative(event.chapterId, event.sceneId))
+                        val currentEntryId = backStackEntry.id
+                        navController.navigate(Routes.narrative(event.chapterId, event.sceneId)) {
+                            popUpTo(currentEntryId) { inclusive = true }
+                            launchSingleTop = true
+                        }
                         viewModel.consumeNavEvent()
                     }
                     null -> Unit

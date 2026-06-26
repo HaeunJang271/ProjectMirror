@@ -66,6 +66,8 @@ class NarrativeViewModel @Inject constructor(
     private val _navEvent = MutableStateFlow<NarrativeNavEvent?>(null)
     val navEvent: StateFlow<NarrativeNavEvent?> = _navEvent.asStateFlow()
 
+    private var isNavigating = false
+
     init {
         loadScene()
     }
@@ -172,6 +174,8 @@ class NarrativeViewModel @Inject constructor(
     private fun navigateTo(sceneId: String) = navigateTo(chapterId, sceneId)
 
     private fun navigateTo(chapter: String, scene: String) {
+        if (isNavigating) return
+        isNavigating = true
         _navEvent.value = NarrativeNavEvent.Scene(chapter, scene)
     }
 
