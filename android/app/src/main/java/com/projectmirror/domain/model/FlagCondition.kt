@@ -13,6 +13,7 @@ fun WorldFlags.flagValue(key: String): String? = when (key) {
     "f002_door_handle" -> f002DoorHandle
     "f005_feather_found" -> f005FeatherFound.toString()
     "rin_recorded" -> rinRecorded.toString()
+    "f004_rin_noticed" -> npcFlags["f004_rin_noticed"] ?: "false"
     else -> npcFlags[key]
 }
 

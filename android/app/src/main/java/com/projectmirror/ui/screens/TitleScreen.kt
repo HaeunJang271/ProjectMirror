@@ -22,6 +22,7 @@ import com.projectmirror.ui.theme.MirrorColors
 fun TitleScreen(
     onNewGame: () -> Unit,
     onContinue: () -> Unit,
+    onLoad: () -> Unit,
     onSettings: () -> Unit,
     viewModel: TitleViewModel = hiltViewModel(),
 ) {
@@ -52,6 +53,11 @@ fun TitleScreen(
                 onClick = onContinue,
             )
         }
+
+        TitleMenuItem(
+            text = "불러오기",
+            onClick = onLoad,
+        )
 
         TitleMenuItem(
             text = "설정",

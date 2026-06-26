@@ -53,18 +53,30 @@ fun NarrativeScreen(
             }
         }
         state.phase == NarrativePhase.CHAPTER_CARD -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(onClick = onAdvance)
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = state.chapterCardTitle.orEmpty(),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MirrorColors.DialogueBody,
-                    textAlign = TextAlign.Center,
+            val onAdvanceState by rememberUpdatedState(onAdvance)
+            Box(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = state.chapterCardTitle.orEmpty(),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MirrorColors.DialogueBody,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zIndex(1f)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = onAdvanceState,
+                        ),
                 )
             }
         }

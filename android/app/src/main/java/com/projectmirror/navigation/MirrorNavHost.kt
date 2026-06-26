@@ -5,20 +5,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.projectmirror.ui.components.AmbientBackground
 import com.projectmirror.ui.screens.JournalScreen
+import com.projectmirror.ui.screens.LoadScreen
 import com.projectmirror.ui.screens.NarrativeScreen
 import com.projectmirror.ui.screens.PauseScreen
+import com.projectmirror.ui.screens.SaveScreen
 import com.projectmirror.ui.screens.SettingsScreen
 import com.projectmirror.ui.screens.TitleScreen
+import com.projectmirror.ui.screens.load.LoadViewModel
 import com.projectmirror.ui.screens.narrative.NarrativeViewModel
 import com.projectmirror.ui.screens.title.TitleViewModel
-import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun MirrorNavHost() {
@@ -33,45 +33,29 @@ fun MirrorNavHost() {
             TitleScreen(
                 onNewGame = {
                     viewModel.startNewGame {
-                        navController.navigate(Routes.narrative("prologue", "p01")) {
+                        navController.navigate(Routes.NARRATIVE) {
                             popUpTo(Routes.TITLE) { inclusive = true }
                         }
                     }
                 },
                 onContinue = {
-                    viewModel.continueGame { progress ->
-                        navController.navigate(
-                            Routes.narrative(progress.chapterId, progress.sceneId),
-                        ) {
+                    viewModel.continueGame {
+                        navController.navigate(Routes.NARRATIVE) {
                             popUpTo(Routes.TITLE) { inclusive = true }
                         }
                     }
                 },
+                onLoad = { navController.navigate(Routes.LOAD) },
                 onSettings = { navController.navigate(Routes.SETTINGS) },
             )
         }
 
-        composable(
-            route = Routes.NARRATIVE,
-            arguments = listOf(
-                navArgument(Routes.CHAPTER_ID) { type = NavType.StringType },
-                navArgument(Routes.SCENE_ID) { type = NavType.StringType },
-            ),
-        ) { backStackEntry ->
-            val viewModel: NarrativeViewModel = hiltViewModel(backStackEntry)
+        composable(Routes.NARRATIVE) {
+            val viewModel: NarrativeViewModel = hiltViewModel()
             val state by viewModel.uiState.collectAsStateWithLifecycle()
 
             BackHandler {
                 navController.navigate(Routes.PAUSE)
-            }
-
-            LaunchedEffect(backStackEntry.id) {
-                viewModel.navEvents.collect { event ->
-                    navController.navigate(Routes.narrative(event.chapterId, event.sceneId)) {
-                        popUpTo(Routes.TITLE) { inclusive = false }
-                        launchSingleTop = true
-                    }
-                }
             }
 
             AmbientBackground(ambientShift = state.ambientShift) {
@@ -92,6 +76,10 @@ fun MirrorNavHost() {
                     navController.popBackStack()
                     navController.navigate(Routes.JOURNAL)
                 },
+                onSave = {
+                    navController.popBackStack()
+                    navController.navigate(Routes.SAVE)
+                },
                 onSettings = {
                     navController.popBackStack()
                     navController.navigate(Routes.SETTINGS)
@@ -102,6 +90,24 @@ fun MirrorNavHost() {
                     }
                 },
             )
+        }
+
+        composable(Routes.LOAD) {
+            val viewModel: LoadViewModel = hiltViewModel()
+            LoadScreen(
+                onBack = { navController.popBackStack() },
+                onLoad = { slot ->
+                    viewModel.loadSlot(slot) {
+                        navController.navigate(Routes.NARRATIVE) {
+                            popUpTo(Routes.TITLE) { inclusive = true }
+                        }
+                    }
+                },
+            )
+        }
+
+        composable(Routes.SAVE) {
+            SaveScreen(onBack = { navController.popBackStack() })
         }
 
         composable(Routes.JOURNAL) {

@@ -12,16 +12,18 @@ import com.projectmirror.data.local.entity.SaveSlotEntity
 import com.projectmirror.domain.model.ChoiceOption
 import com.projectmirror.domain.model.DispositionWeights
 import com.projectmirror.domain.model.SaveProgress
+import com.projectmirror.domain.model.SaveSlotInfo
+import com.projectmirror.domain.model.SaveSnapshot
 import com.projectmirror.domain.model.WorldFlags
 import com.projectmirror.domain.model.applyFlagUpdates
+import com.projectmirror.domain.model.decodeSaveSnapshot
 import com.projectmirror.domain.model.dispositionAmbientDelta
+import com.projectmirror.domain.model.encodeSaveSnapshot
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -33,16 +35,15 @@ class GameStateRepository @Inject constructor(
     private val foreshadowDao: ForeshadowDao,
     private val playerPreferences: PlayerPreferences,
 ) {
-    private val json = Json { ignoreUnknownKeys = true }
-
     private val _worldFlags = MutableStateFlow(WorldFlags())
     val worldFlags: StateFlow<WorldFlags> = _worldFlags.asStateFlow()
 
     val disposition: Flow<DispositionWeights> = playerPreferences.disposition
-
     val dialogueLog = dialogueLogDao.observeAll()
-
     val hasProgress = playerPreferences.hasProgress
+
+    private var lastChapterId: String? = null
+    private var lastSceneId: String? = null
 
     suspend fun resetForNewGame() {
         _worldFlags.value = WorldFlags()
@@ -50,16 +51,65 @@ class GameStateRepository @Inject constructor(
         dialogueLogDao.clearAll()
         saveSlotDao.deleteSlot(0)
         playerPreferences.clearProgress()
+        lastChapterId = null
+        lastSceneId = null
+    }
+
+    suspend fun syncSessionFromStorage(): SaveProgress {
+        val progress = playerPreferences.getProgress()
+        val auto = saveSlotDao.getSlot(0)
+        if (auto != null) {
+            applySnapshot(decodeSaveSnapshot(auto.snapshotJson))
+            lastChapterId = auto.chapterId
+            lastSceneId = auto.sceneId
+            return SaveProgress(auto.chapterId, auto.sceneId)
+        }
+        return progress ?: SaveProgress("prologue", "p01")
     }
 
     suspend fun restoreAutoSave(): SaveProgress? {
         val slot = saveSlotDao.getSlot(0) ?: return null
+        applySnapshot(decodeSaveSnapshot(slot.snapshotJson))
         val progress = playerPreferences.getProgress() ?: SaveProgress(slot.chapterId, slot.sceneId)
-        _worldFlags.value = runCatching {
-            json.decodeFromString<WorldFlags>(slot.snapshotJson)
-        }.getOrDefault(WorldFlags())
+        lastChapterId = progress.chapterId
+        lastSceneId = progress.sceneId
         return progress
     }
+
+    suspend fun restoreManualSlot(slot: Int): SaveProgress? {
+        require(slot in 1..3)
+        val entity = saveSlotDao.getSlot(slot) ?: return null
+        applySnapshot(decodeSaveSnapshot(entity.snapshotJson))
+        playerPreferences.setChapter(entity.chapterId, entity.sceneId)
+        autoSave(entity.chapterId, entity.sceneId)
+        return SaveProgress(entity.chapterId, entity.sceneId)
+    }
+
+    suspend fun saveToManualSlot(slot: Int) {
+        require(slot in 1..3)
+        val chapter = lastChapterId ?: playerPreferences.getProgress()?.chapterId ?: return
+        val scene = lastSceneId ?: playerPreferences.getProgress()?.sceneId ?: return
+        val snapshot = currentSnapshot()
+        saveSlotDao.upsert(
+            SaveSlotEntity(
+                slot = slot,
+                chapterId = chapter,
+                sceneId = scene,
+                snapshotJson = encodeSaveSnapshot(snapshot),
+                updatedAt = System.currentTimeMillis(),
+            ),
+        )
+    }
+
+    suspend fun loadManualSlotInfos(): List<SaveSlotInfo> =
+        saveSlotDao.getManualSlots().map { entity ->
+            SaveSlotInfo(
+                slot = entity.slot,
+                chapterId = entity.chapterId,
+                sceneId = entity.sceneId,
+                updatedAt = entity.updatedAt,
+            )
+        }
 
     suspend fun applyChoice(
         choice: ChoiceOption,
@@ -140,15 +190,29 @@ class GameStateRepository @Inject constructor(
     }
 
     suspend fun autoSave(chapterId: String, sceneId: String, flags: WorldFlags = _worldFlags.value) {
+        lastChapterId = chapterId
+        lastSceneId = sceneId
+        val snapshot = SaveSnapshot(worldFlags = flags, disposition = playerPreferences.disposition.first())
         saveSlotDao.upsert(
             SaveSlotEntity(
                 slot = 0,
                 chapterId = chapterId,
                 sceneId = sceneId,
-                snapshotJson = json.encodeToString(flags),
+                snapshotJson = encodeSaveSnapshot(snapshot),
                 updatedAt = System.currentTimeMillis(),
             ),
         )
         playerPreferences.setChapter(chapterId, sceneId)
+    }
+
+    private suspend fun currentSnapshot(): SaveSnapshot =
+        SaveSnapshot(
+            worldFlags = _worldFlags.value,
+            disposition = playerPreferences.disposition.first(),
+        )
+
+    private suspend fun applySnapshot(snapshot: SaveSnapshot) {
+        _worldFlags.value = snapshot.worldFlags
+        playerPreferences.updateDisposition(snapshot.disposition)
     }
 }

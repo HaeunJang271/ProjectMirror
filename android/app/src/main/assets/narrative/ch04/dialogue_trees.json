@@ -1,0 +1,63 @@
+{
+  "chapterId": "ch04",
+  "scenes": [
+    {
+      "id": "c04_intro",
+      "type": "narrative",
+      "nextSceneId": "c04_rin",
+      "lines": [
+        { "type": "narration", "text": "바닥에 물이 다시 고여 있다.\n\n이번엔 따뜻하지 않다." },
+        { "type": "narration", "text": "거울 표면이 물결처럼 일렁인다." }
+      ]
+    },
+    {
+      "id": "c04_rin",
+      "type": "dialogue",
+      "speaker": "린",
+      "nextSceneId": "c04_door",
+      "lines": [
+        { "type": "dialogue", "speaker": "린", "text": "……돌아왔네요." },
+        {
+          "type": "dialogue",
+          "speaker": "린",
+          "text": "그때 가리켰죠.\n\n제 칸.\n\n……아직 비어 있어요.",
+          "requireFlag": { "key": "f004_rin_noticed", "equals": "true" }
+        }
+      ]
+    },
+    {
+      "id": "c04_door",
+      "type": "narrative",
+      "nextSceneId": "c04_so",
+      "lines": [
+        {
+          "type": "narration",
+          "text": "손잡이가 따뜻하다.\n\n처음 문과 같다.",
+          "requireFlag": { "key": "f002_door_handle", "equals": "warm" }
+        },
+        {
+          "type": "narration",
+          "text": "손잡이가 차갑다.\n\n그때 기다렸던 것과 같다.",
+          "requireFlag": { "key": "f002_door_handle", "equals": "cold" }
+        }
+      ]
+    },
+    {
+      "id": "c04_so",
+      "type": "dialogue",
+      "speaker": "소",
+      "nextSceneId": "c04_end",
+      "lines": [
+        { "type": "dialogue", "speaker": "소", "text": "이쪽은 원래 물이 없었어요.\n\n……생긴 거예요." }
+      ]
+    },
+    {
+      "id": "c04_end",
+      "type": "narrative",
+      "chapterComplete": true,
+      "lines": [
+        { "type": "narration", "text": "물결이 잦아든다.\n\n거울은 말하지 않는다." }
+      ]
+    }
+  ]
+}

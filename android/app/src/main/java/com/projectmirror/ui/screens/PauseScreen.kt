@@ -18,6 +18,7 @@ import com.projectmirror.ui.theme.MirrorColors
 fun PauseScreen(
     onResume: () -> Unit,
     onJournal: () -> Unit,
+    onSave: () -> Unit,
     onSettings: () -> Unit,
     onTitle: () -> Unit,
 ) {
@@ -37,6 +38,7 @@ fun PauseScreen(
 
         PauseMenuItem("돌아가기", onResume)
         PauseMenuItem("일기", onJournal)
+        PauseMenuItem("저장", onSave)
         PauseMenuItem("설정", onSettings)
         PauseMenuItem("타이틀로", onTitle)
     }

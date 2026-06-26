@@ -14,6 +14,9 @@ interface SaveSlotDao {
     @Query("SELECT * FROM save_slots WHERE slot = :slot LIMIT 1")
     suspend fun getSlot(slot: Int): SaveSlotEntity?
 
+    @Query("SELECT * FROM save_slots WHERE slot IN (1, 2, 3) ORDER BY slot ASC")
+    suspend fun getManualSlots(): List<SaveSlotEntity>
+
     @Query("DELETE FROM save_slots WHERE slot = :slot")
     suspend fun deleteSlot(slot: Int)
 

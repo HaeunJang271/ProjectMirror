@@ -1,6 +1,5 @@
 package com.projectmirror.ui.screens.narrative
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.projectmirror.data.repository.GameStateRepository
@@ -13,11 +12,8 @@ import com.projectmirror.domain.model.filterByFlags
 import com.projectmirror.domain.model.totalAmbientShift
 import com.projectmirror.domain.usecase.ApplyChoiceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,11 +25,6 @@ enum class NarrativePhase {
     HUB_EXITS,
     CHAPTER_CARD,
 }
-
-data class NarrativeNavEvent(
-    val chapterId: String,
-    val sceneId: String,
-)
 
 data class NarrativeUiState(
     val chapterId: String = "prologue",
@@ -58,43 +49,43 @@ class NarrativeViewModel @Inject constructor(
     private val narrativeRepository: NarrativeRepository,
     private val applyChoiceUseCase: ApplyChoiceUseCase,
     private val gameStateRepository: GameStateRepository,
-    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    val chapterId: String = savedStateHandle.get<String>("chapterId") ?: "prologue"
-    private var currentSceneId: String = savedStateHandle.get<String>("sceneId") ?: "p01"
+    private var activeChapterId: String = "prologue"
+    private var currentSceneId: String = "p01"
 
     private var scene: NarrativeScene? = null
     private var afterResultSceneId: String? = null
 
     private val _uiState = MutableStateFlow(
-        NarrativeUiState(chapterId = chapterId, sceneId = currentSceneId),
+        NarrativeUiState(chapterId = activeChapterId, sceneId = currentSceneId),
     )
     val uiState: StateFlow<NarrativeUiState> = _uiState.asStateFlow()
-
-    private val _navEvents = MutableSharedFlow<NarrativeNavEvent>(extraBufferCapacity = 1)
-    val navEvents: SharedFlow<NarrativeNavEvent> = _navEvents.asSharedFlow()
 
     init {
         viewModelScope.launch {
             gameStateRepository.worldFlags.collect { flags ->
                 _uiState.update {
-                    it.copy(ambientShift = flags.totalAmbientShift(chapterId))
+                    it.copy(ambientShift = flags.totalAmbientShift(activeChapterId))
                 }
             }
         }
-        loadScene(currentSceneId)
+        viewModelScope.launch {
+            val progress = gameStateRepository.syncSessionFromStorage()
+            loadScene(progress.chapterId, progress.sceneId)
+        }
     }
 
-    private fun loadScene(sceneId: String) {
+    private fun loadScene(chapter: String, sceneId: String) {
         viewModelScope.launch {
-            val loaded = narrativeRepository.loadScene(chapterId, sceneId)
+            val loaded = narrativeRepository.loadScene(chapter, sceneId)
             if (loaded == null) {
                 _uiState.update {
-                    it.copy(isLoading = false, error = "Scene not found: $chapterId/$sceneId")
+                    it.copy(isLoading = false, error = "Scene not found: $chapter/$sceneId")
                 }
                 return@launch
             }
+            activeChapterId = chapter
             applyScene(loaded)
         }
     }
@@ -112,6 +103,7 @@ class NarrativeViewModel @Inject constructor(
         }
         _uiState.update {
             it.copy(
+                chapterId = activeChapterId,
                 sceneId = loaded.id,
                 speaker = loaded.speaker,
                 displayLines = filteredLines,
@@ -122,11 +114,11 @@ class NarrativeViewModel @Inject constructor(
                 isLoading = false,
                 error = null,
                 chapterCardTitle = chapterCardTitle(loaded),
-                ambientShift = flags.totalAmbientShift(chapterId),
+                ambientShift = flags.totalAmbientShift(activeChapterId),
             )
         }
         filteredLines.firstOrNull()?.let { logLine(it) }
-        gameStateRepository.autoSave(chapterId, loaded.id)
+        gameStateRepository.autoSave(activeChapterId, loaded.id)
     }
 
     fun advance() {
@@ -145,9 +137,9 @@ class NarrativeViewModel @Inject constructor(
                 }
             }
             NarrativePhase.CHAPTER_CARD -> {
-                val next = nextChapter(state.sceneId)
+                val next = nextChapter(activeChapterId, state.sceneId)
                 if (next != null) {
-                    requestChapterNavigation(next.first, next.second)
+                    loadScene(next.first, next.second)
                 }
             }
             else -> Unit
@@ -170,8 +162,8 @@ class NarrativeViewModel @Inject constructor(
 
     fun selectChoice(choice: ChoiceOption) {
         viewModelScope.launch {
-            gameStateRepository.logChoice(chapterId, currentSceneId, choice.label)
-            applyChoiceUseCase(choice, chapterId, currentSceneId)
+            gameStateRepository.logChoice(activeChapterId, currentSceneId, choice.label)
+            applyChoiceUseCase(choice, activeChapterId, currentSceneId)
             if (choice.resultLines.isNotEmpty()) {
                 afterResultSceneId = choice.nextSceneId
                 val filtered = choice.resultLines.filterByFlags(gameStateRepository.worldFlags.value)
@@ -199,7 +191,7 @@ class NarrativeViewModel @Inject constructor(
     private fun goToScene(sceneId: String) {
         if (sceneId == currentSceneId) return
         viewModelScope.launch {
-            val loaded = narrativeRepository.loadScene(chapterId, sceneId) ?: return@launch
+            val loaded = narrativeRepository.loadScene(activeChapterId, sceneId) ?: return@launch
             applyScene(loaded)
         }
     }
@@ -208,7 +200,7 @@ class NarrativeViewModel @Inject constructor(
         viewModelScope.launch {
             val speaker = if (line.type == "dialogue") line.speaker ?: scene?.speaker else null
             gameStateRepository.logDialogue(
-                chapterId = chapterId,
+                chapterId = activeChapterId,
                 sceneId = currentSceneId,
                 lineType = line.type,
                 speaker = speaker,
@@ -217,22 +209,21 @@ class NarrativeViewModel @Inject constructor(
         }
     }
 
-    private fun requestChapterNavigation(chapter: String, scene: String) {
-        _navEvents.tryEmit(NarrativeNavEvent(chapter, scene))
-    }
-
     private fun chapterCardTitle(loaded: NarrativeScene): String? = when (loaded.id) {
         "p06" -> if (loaded.chapterComplete) "Chapter 1\n첫 반사" else null
         "c01_end" -> if (loaded.chapterComplete) "Chapter 2\n비의 자리" else null
         "c02_end" -> if (loaded.chapterComplete) "Chapter 3\n깃털의 방" else null
-        "c03_end" -> if (loaded.chapterComplete) "Chapter 4\n(준비 중)" else null
+        "c03_end" -> if (loaded.chapterComplete) "Chapter 4\n거울의 물" else null
+        "c04_end" -> if (loaded.chapterComplete) "Chapter 5\n(준비 중)" else null
         else -> null
     }
 
-    private fun nextChapter(sceneId: String): Pair<String, String>? = when (chapterId to sceneId) {
-        "prologue" to "p06" -> "ch01" to "c01_hub"
-        "ch01" to "c01_end" -> "ch02" to "c02_intro"
-        "ch02" to "c02_end" -> "ch03" to "c03_intro"
-        else -> null
-    }
+    private fun nextChapter(chapterId: String, sceneId: String): Pair<String, String>? =
+        when (chapterId to sceneId) {
+            "prologue" to "p06" -> "ch01" to "c01_hub"
+            "ch01" to "c01_end" -> "ch02" to "c02_intro"
+            "ch02" to "c02_end" -> "ch03" to "c03_intro"
+            "ch03" to "c03_end" -> "ch04" to "c04_intro"
+            else -> null
+        }
 }

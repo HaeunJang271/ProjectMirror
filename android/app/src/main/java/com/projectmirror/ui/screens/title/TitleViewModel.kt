@@ -3,7 +3,6 @@ package com.projectmirror.ui.screens.title
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.projectmirror.data.repository.GameStateRepository
-import com.projectmirror.domain.model.SaveProgress
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -38,10 +37,10 @@ class TitleViewModel @Inject constructor(
         }
     }
 
-    fun continueGame(onReady: (SaveProgress) -> Unit) {
+    fun continueGame(onReady: () -> Unit) {
         viewModelScope.launch {
-            val progress = gameStateRepository.restoreAutoSave() ?: return@launch
-            onReady(progress)
+            gameStateRepository.restoreAutoSave() ?: return@launch
+            onReady()
         }
     }
 }

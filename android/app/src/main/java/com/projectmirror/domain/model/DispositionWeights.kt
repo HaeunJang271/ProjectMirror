@@ -1,5 +1,8 @@
 package com.projectmirror.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class DispositionWeights(
     val empathy: Int = 0,
     val curiosity: Int = 0,

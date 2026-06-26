@@ -5,6 +5,7 @@ fun chapterBaseAmbient(chapterId: String): Float = when (chapterId) {
     "ch01" -> 0f
     "ch02" -> -0.18f
     "ch03" -> -0.05f
+    "ch04" -> 0.02f
     else -> 0f
 }
 
