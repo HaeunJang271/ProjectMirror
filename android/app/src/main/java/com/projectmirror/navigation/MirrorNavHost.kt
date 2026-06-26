@@ -1,6 +1,7 @@
 package com.projectmirror.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -11,7 +12,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.projectmirror.ui.screens.NarrativeScreen
 import com.projectmirror.ui.screens.TitleScreen
-import com.projectmirror.ui.screens.prologue.PrologueViewModel
+import com.projectmirror.ui.screens.narrative.NarrativeNavEvent
+import com.projectmirror.ui.screens.narrative.NarrativeViewModel
+import com.projectmirror.ui.screens.title.TitleViewModel
 
 @Composable
 fun MirrorNavHost() {
@@ -22,37 +25,44 @@ fun MirrorNavHost() {
         startDestination = Routes.TITLE,
     ) {
         composable(Routes.TITLE) {
+            val viewModel: TitleViewModel = hiltViewModel()
             TitleScreen(
                 onNewGame = {
-                    navController.navigate(Routes.prologue("p01")) {
-                        popUpTo(Routes.TITLE)
+                    viewModel.startNewGame {
+                        navController.navigate(Routes.narrative("prologue", "p01")) {
+                            popUpTo(Routes.TITLE)
+                        }
                     }
                 },
             )
         }
 
         composable(
-            route = Routes.PROLOGUE,
+            route = Routes.NARRATIVE,
             arguments = listOf(
-                navArgument(Routes.PROLOGUE_SCENE) { type = NavType.StringType },
+                navArgument(Routes.CHAPTER_ID) { type = NavType.StringType },
+                navArgument(Routes.SCENE_ID) { type = NavType.StringType },
             ),
         ) {
-            val viewModel: PrologueViewModel = hiltViewModel()
+            val viewModel: NarrativeViewModel = hiltViewModel()
             val state by viewModel.uiState.collectAsStateWithLifecycle()
+            val navEvent by viewModel.navEvent.collectAsStateWithLifecycle()
+
+            LaunchedEffect(navEvent) {
+                when (val event = navEvent) {
+                    is NarrativeNavEvent.Scene -> {
+                        navController.navigate(Routes.narrative(event.chapterId, event.sceneId))
+                        viewModel.consumeNavEvent()
+                    }
+                    null -> Unit
+                }
+            }
 
             NarrativeScreen(
-                line = state.currentLine,
-                isLoading = state.isLoading,
-                error = state.error,
-                onAdvance = {
-                    if (state.hasNextLine) {
-                        viewModel.advance()
-                    } else {
-                        viewModel.nextSceneId()?.let { next ->
-                            navController.navigate(Routes.prologue(next))
-                        }
-                    }
-                },
+                state = state,
+                onAdvance = { viewModel.advance() },
+                onChoice = { viewModel.selectChoice(it) },
+                onExit = { viewModel.selectExit(it) },
             )
         }
     }

@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.projectmirror.ui.theme.MirrorColors
 
 data class DialogueChoice(
     val id: String,
@@ -33,12 +34,13 @@ fun DialogueScreen(
     ) {
         Text(
             text = speaker,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleSmall,
+            color = MirrorColors.SpeakerName,
         )
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
+            color = MirrorColors.DialogueBody,
             modifier = Modifier.padding(vertical = 16.dp),
         )
         choices.forEach { choice ->

@@ -1,35 +1,30 @@
-# Sprint 2 — 대사 · 브리프 · Android 스캐폴드
+# Sprint 2 — 대사 · 브리프 · Android
 
-> **상태: 진행 중** | 2026-06-26~
-
----
-
-## 목표
-
-1. Chapter 2 대사 초안
-2. Chapter 1 아트/오디오 브리프
-3. Android 프로젝트 스캐폴드
+> **상태: ✅ 핵심 완료**
 
 ---
 
 ## 완료
 
-- [x] [Chapter2Script.md](./Chapter2Script.md) — 이묵·하린·소·핵심 선택
-- [x] [ArtGuide.md](./ArtGuide.md) v0.2 — Ch1 환경·캐릭터·UI·에셋 체크리스트
-- [x] [AudioGuide.md](./AudioGuide.md) v0.2 — Prologue~Ch1 SFX·침묵 연출
-- [x] [android/](../android/) — Compose·Hilt·Room·DataStore·Prologue JSON
+- [x] Prologue p01~p06 JSON (`assets/narrative/prologue/scenes.json`)
+- [x] Chapter 1 `dialogue_trees.json` + 허브·선택 11종
+- [x] `choices.json` 인덱스 (QuestBible ID 매핑)
+- [x] `ApplyChoiceUseCase` — 성향·복선·WorldFlags·자동저장
+- [x] `NarrativeViewModel` — 통합 씬/선택/허브/챕터카드
+- [x] Android 스캐폴드 빌드
 
 ---
 
-## Sprint 2 남은 작업
+## 남은 작업 (Sprint 3)
 
-- [ ] Prologue p04~p06 JSON 에셋 확장
-- [ ] Chapter 1 dialogue_trees.json
-- [ ] Choice 적용 UseCase
-- [ ] Gradle 빌드 CI
+- [ ] Chapter 2 JSON (Chapter2Script 반영)
+- [ ] Journal 화면
+- [ ] Ambient 연출 (색온도)
 
 ---
 
 ## 연결
 
-- [Sprint1.md](./Sprint1.md) · [TechSpec.md](./TechSpec.md)
+- [Chapter2Script.md](./Chapter2Script.md)
+- [QuestBible.md](./QuestBible.md)
+- [../android/README.md](../android/README.md)

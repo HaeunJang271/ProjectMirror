@@ -7,9 +7,14 @@ import com.projectmirror.data.local.dao.SaveSlotDao
 import com.projectmirror.data.local.entity.ChoiceLogEntity
 import com.projectmirror.data.local.entity.ForeshadowEntity
 import com.projectmirror.data.local.entity.SaveSlotEntity
+import com.projectmirror.domain.model.ChoiceOption
 import com.projectmirror.domain.model.DispositionWeights
 import com.projectmirror.domain.model.WorldFlags
+import com.projectmirror.domain.model.applyFlagUpdates
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -25,7 +30,33 @@ class GameStateRepository @Inject constructor(
 ) {
     private val json = Json { ignoreUnknownKeys = true }
 
+    private val _worldFlags = MutableStateFlow(WorldFlags())
+    val worldFlags: StateFlow<WorldFlags> = _worldFlags.asStateFlow()
+
     val disposition: Flow<DispositionWeights> = playerPreferences.disposition
+
+    suspend fun resetForNewGame() {
+        _worldFlags.value = WorldFlags()
+        playerPreferences.updateDisposition(DispositionWeights())
+    }
+
+    suspend fun applyChoice(
+        choice: ChoiceOption,
+        chapterId: String,
+        sceneId: String,
+    ): WorldFlags {
+        recordChoice(choice.id, chapterId)
+        if (choice.dispositionDelta.isNotEmpty()) {
+            applyDispositionDelta(choice.dispositionDelta)
+        }
+        choice.foreshadow.forEach { (flagId, state) ->
+            setForeshadow(flagId, state)
+        }
+        val updated = _worldFlags.value.applyFlagUpdates(choice.flagUpdates)
+        _worldFlags.value = updated
+        autoSave(chapterId, sceneId, updated)
+        return updated
+    }
 
     suspend fun recordChoice(choiceId: String, chapterId: String, slot: Int? = null) {
         choiceLogDao.insert(
@@ -34,7 +65,7 @@ class GameStateRepository @Inject constructor(
                 chapterId = chapterId,
                 timestamp = System.currentTimeMillis(),
                 slot = slot,
-            )
+            ),
         )
     }
 
@@ -45,11 +76,11 @@ class GameStateRepository @Inject constructor(
 
     suspend fun setForeshadow(flagId: String, state: String, metadata: String? = null) {
         foreshadowDao.upsert(
-            ForeshadowEntity(flagId = flagId, state = state, metadata = metadata)
+            ForeshadowEntity(flagId = flagId, state = state, metadata = metadata),
         )
     }
 
-    suspend fun autoSave(chapterId: String, sceneId: String, flags: WorldFlags) {
+    suspend fun autoSave(chapterId: String, sceneId: String, flags: WorldFlags = _worldFlags.value) {
         saveSlotDao.upsert(
             SaveSlotEntity(
                 slot = 0,
@@ -57,7 +88,7 @@ class GameStateRepository @Inject constructor(
                 sceneId = sceneId,
                 snapshotJson = json.encodeToString(flags),
                 updatedAt = System.currentTimeMillis(),
-            )
+            ),
         )
         playerPreferences.setChapter(chapterId, sceneId)
     }

@@ -1,0 +1,12 @@
+{
+  "chapterId": "ch02",
+  "scenes": [
+    {
+      "id": "c02_intro",
+      "type": "narrative",
+      "lines": [
+        { "type": "narration", "text": "비가 내린다.\n\n(Chapter 2 — 대사 에셋은 Chapter2Script.md 참조)" }
+      ]
+    }
+  ]
+}

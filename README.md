@@ -134,8 +134,8 @@ Android 1차 · PC 확장 · 장기 운영형 인디 프로젝트.
 | Prologue 대사 | ✅ [PrologueScript.md](docs/PrologueScript.md) |
 | Chapter 2 대사 | ✅ [Chapter2Script.md](docs/Chapter2Script.md) |
 | Ch1 아트/오디오 | ✅ [ArtGuide](docs/ArtGuide.md) · [AudioGuide](docs/AudioGuide.md) v0.2 |
-| Android 스캐폴드 | ✅ [android/](android/) |
-| **다음** | Ch1 JSON · Choice 연동 · Sprint 2 마무리 |
+| Android 스캐폴드 | ✅ 빌드·에뮬 실행 |
+| **다음** | Ch2 JSON · Journal · Ambient 연출 |
 
 ---
 

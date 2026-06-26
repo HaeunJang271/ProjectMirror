@@ -1,7 +1,9 @@
 {
+  "chapterId": "prologue",
   "scenes": [
     {
       "id": "p01",
+      "type": "narrative",
       "nextSceneId": "p02",
       "lines": [
         { "type": "narration", "text": "눈을 떴다.\n\n어디인지 모른다.\n\n몸만 있다." },
@@ -10,18 +12,71 @@
     },
     {
       "id": "p02",
-      "nextSceneId": "p03",
+      "type": "narrative",
       "lines": [
         { "type": "narration", "text": "앞에 무언가 있다.\n\n문인 것 같다." },
         { "type": "narration", "text": "손잡이가 보인다.\n\n가까이 가면——\n\n따뜻하다." }
+      ],
+      "choices": [
+        {
+          "id": "CHO-P02_OPEN",
+          "label": "문을 연다",
+          "nextSceneId": "p03",
+          "dispositionDelta": { "courage": 3 },
+          "foreshadow": { "F-002": "warm" },
+          "flagUpdates": { "f002_door_handle": "warm" }
+        },
+        {
+          "id": "CHO-P02_WAIT",
+          "label": "조금 더 선다",
+          "nextSceneId": "p03",
+          "dispositionDelta": { "doubt": 3 },
+          "foreshadow": { "F-002": "cold" },
+          "flagUpdates": { "f002_door_handle": "cold" },
+          "resultLines": [
+            { "type": "narration", "text": "차갑다.\n\n문 너머에서 바람이 아닌 것이 스친다." }
+          ]
+        }
       ]
     },
     {
       "id": "p03",
-      "nextSceneId": null,
+      "type": "narrative",
+      "nextSceneId": "p04",
       "lines": [
         { "type": "narration", "text": "문이 열린다.\n\n소리는 없다." },
-        { "type": "narration", "text": "빛이 새어 나온다.\n\n그 안에 누군가 서 있다.\n\n……나인가." }
+        { "type": "narration", "text": "빛이 새어 나온다.\n\n그 안에 누군가 서 있다." },
+        { "type": "narration", "text": "……나인가." }
+      ]
+    },
+    {
+      "id": "p04",
+      "type": "narrative",
+      "nextSceneId": "p05",
+      "lines": [
+        { "type": "narration", "text": "움직인다.\n\n한 박자 늦게, 실루엣도 움직인다." },
+        { "type": "narration", "text": "같은 타이밍이 아니다." },
+        { "type": "narration", "text": "거울인가.\n\n아니면——" }
+      ]
+    },
+    {
+      "id": "p05",
+      "type": "narrative",
+      "nextSceneId": "p06",
+      "lines": [
+        { "type": "narration", "text": "창이 있다.\n\n열리지 않은 창." },
+        { "type": "narration", "text": "달이 보인다.\n\n말하지 않은 것 같다." }
+      ]
+    },
+    {
+      "id": "p06",
+      "type": "narrative",
+      "chapterComplete": true,
+      "lines": [
+        { "type": "narration", "text": "복도가 이어진다.\n\n석조.\n\n거울.\n\n수천 개의 거울." },
+        { "type": "narration", "text": "바닥에 물이 고여 있다.\n\n발을 담그면, 비친다." },
+        { "type": "narration", "text": "잡히지 않는다." },
+        { "type": "narration", "text": "여기가 어디인지는 여전히 모른다.\n\n하지만——\n\n걸을 수는 있다." }
       ]
     }
   ]

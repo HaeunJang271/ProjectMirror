@@ -1,8 +1,8 @@
 package com.projectmirror.data.repository
 
 import android.content.Context
+import com.projectmirror.domain.model.NarrativeChapterFile
 import com.projectmirror.domain.model.NarrativeScene
-import com.projectmirror.domain.model.PrologueScenesFile
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -14,11 +14,22 @@ class NarrativeRepository @Inject constructor(
 ) {
     private val json = Json { ignoreUnknownKeys = true }
 
-    fun loadPrologueScene(sceneId: String): NarrativeScene? {
-        val text = context.assets.open("narrative/prologue/scenes.json")
-            .bufferedReader()
-            .use { it.readText() }
-        val file = json.decodeFromString<PrologueScenesFile>(text)
+    fun loadScene(chapterId: String, sceneId: String): NarrativeScene? {
+        val assetPath = when (chapterId) {
+            "prologue" -> "narrative/prologue/scenes.json"
+            else -> "narrative/$chapterId/dialogue_trees.json"
+        }
+        val text = context.assets.open(assetPath).bufferedReader().use { it.readText() }
+        val file = json.decodeFromString<NarrativeChapterFile>(text)
         return file.scenes.find { it.id == sceneId }
+    }
+
+    fun loadChapter(chapterId: String): NarrativeChapterFile {
+        val assetPath = when (chapterId) {
+            "prologue" -> "narrative/prologue/scenes.json"
+            else -> "narrative/$chapterId/dialogue_trees.json"
+        }
+        val text = context.assets.open(assetPath).bufferedReader().use { it.readText() }
+        return json.decodeFromString(text)
     }
 }

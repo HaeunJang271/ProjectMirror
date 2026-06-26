@@ -1,0 +1,71 @@
+{
+  "version": "0.1",
+  "choices": [
+    {
+      "id": "CHO-P02_OPEN",
+      "chapterId": "prologue",
+      "sceneId": "p02",
+      "label": "문을 연다"
+    },
+    {
+      "id": "CHO-P02_WAIT",
+      "chapterId": "prologue",
+      "sceneId": "p02",
+      "label": "조금 더 선다"
+    },
+    {
+      "id": "CHO-C01-RIN-A",
+      "chapterId": "ch01",
+      "sceneId": "c01_rin",
+      "label": "이름을 적어준다"
+    },
+    {
+      "id": "CHO-C01-RIN-B",
+      "chapterId": "ch01",
+      "sceneId": "c01_rin",
+      "label": "이름을 말하지 않는다"
+    },
+    {
+      "id": "CHO-C01-RIN-C",
+      "chapterId": "ch01",
+      "sceneId": "c01_rin",
+      "label": "린의 빈 칸을 가리킨다"
+    },
+    {
+      "id": "CHO-C01-GAON-A",
+      "chapterId": "ch01",
+      "sceneId": "c01_gaon",
+      "label": "창문을 열어줄까 묻는다"
+    },
+    {
+      "id": "CHO-C01-GAON-B",
+      "chapterId": "ch01",
+      "sceneId": "c01_gaon",
+      "label": "조용히 앉아 함께 듣는다"
+    },
+    {
+      "id": "CHO-C01-FEATHER",
+      "chapterId": "ch01",
+      "sceneId": "c01_gaon",
+      "label": "책상 아래 깃털을 본다"
+    },
+    {
+      "id": "CHO-C01-CRACK-A",
+      "chapterId": "ch01",
+      "sceneId": "c01_crack",
+      "label": "손을 댄다"
+    },
+    {
+      "id": "CHO-C01-CRACK-B",
+      "chapterId": "ch01",
+      "sceneId": "c01_crack",
+      "label": "지나친다"
+    },
+    {
+      "id": "CHO-C01-CRACK-C",
+      "chapterId": "ch01",
+      "sceneId": "c01_crack",
+      "label": "거울을 등진다"
+    }
+  ]
+}

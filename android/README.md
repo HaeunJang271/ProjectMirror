@@ -43,10 +43,10 @@ Android Studio: `android/` 폴더 Open.
 - [x] Room (save_slots, choice_log, foreshadow_flags)
 - [x] DataStore (성향 8종)
 - [x] Prologue JSON (`assets/narrative/prologue/scenes.json`)
-- [x] Title → Prologue p01~p03 탭 진행
-- [ ] Chapter 1 씬
-- [ ] Choice 시스템 연동
-- [ ] Journal / Settings
+- [x] Title → Prologue p01~p06 → Chapter 1 허브·선택
+- [x] Choice 시스템 (`ApplyChoiceUseCase`)
+- [x] `assembleDebug` 빌드 성공
+- [x] 에뮬레이터 설치·실행 (`Medium_Phone_API_35`)
 
 ---
 

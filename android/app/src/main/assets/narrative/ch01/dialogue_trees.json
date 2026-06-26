@@ -1,0 +1,128 @@
+{
+  "chapterId": "ch01",
+  "scenes": [
+    {
+      "id": "c01_hub",
+      "type": "hub",
+      "lines": [
+        { "type": "narration", "text": "기억의 홀.\n\n거울이 복도를 따라 이어진다.\n\n바닥의 물이 발을 적신다." }
+      ],
+      "exits": [
+        { "label": "이름의 서재", "sceneId": "c01_rin" },
+        { "label": "닫힌 창가", "sceneId": "c01_gaon" },
+        { "label": "금이 간 홀", "sceneId": "c01_crack" }
+      ]
+    },
+    {
+      "id": "c01_rin",
+      "type": "dialogue",
+      "speaker": "린",
+      "lines": [
+        { "type": "dialogue", "speaker": "린", "text": "……이름이 있으세요?" },
+        { "type": "dialogue", "speaker": "린", "text": "이름은 적어두면 잊지 않아요." },
+        { "type": "dialogue", "speaker": "린", "text": "……제 칸만 비어 있어요." }
+      ],
+      "choices": [
+        {
+          "id": "CHO-C01-RIN-A",
+          "label": "이름을 적어준다",
+          "nextSceneId": "c01_hub",
+          "dispositionDelta": { "sacrifice": 5, "empathy": 4 },
+          "flagUpdates": { "rin_recorded": "true" }
+        },
+        {
+          "id": "CHO-C01-RIN-B",
+          "label": "이름을 말하지 않는다",
+          "nextSceneId": "c01_hub",
+          "dispositionDelta": { "self_centered": 4, "doubt": 3 },
+          "flagUpdates": { "rin_recorded": "false" }
+        },
+        {
+          "id": "CHO-C01-RIN-C",
+          "label": "린의 빈 칸을 가리킨다",
+          "nextSceneId": "c01_hub",
+          "dispositionDelta": { "curiosity": 5 },
+          "flagUpdates": { "f004_rin_noticed": "true" }
+        }
+      ]
+    },
+    {
+      "id": "c01_gaon",
+      "type": "dialogue",
+      "speaker": "가온",
+      "lines": [
+        { "type": "dialogue", "speaker": "가온", "text": "……밖에 있으면 …아직 날 수 있어요." },
+        { "type": "dialogue", "speaker": "가온", "text": "열면 …모를 것 같아서." }
+      ],
+      "choices": [
+        {
+          "id": "CHO-C01-GAON-A",
+          "label": "창문을 열어줄까 묻는다",
+          "nextSceneId": "c01_hub",
+          "dispositionDelta": { "empathy": 4 },
+          "flagUpdates": { "gaon_asked": "true" }
+        },
+        {
+          "id": "CHO-C01-GAON-B",
+          "label": "조용히 앉아 함께 듣는다",
+          "nextSceneId": "c01_hub",
+          "dispositionDelta": { "empathy": 6 },
+          "flagUpdates": { "gaon_silent": "true" }
+        },
+        {
+          "id": "CHO-C01-FEATHER",
+          "label": "책상 아래 깃털을 본다",
+          "nextSceneId": "c01_hub",
+          "dispositionDelta": { "curiosity": 4 },
+          "foreshadow": { "F-005": "found" },
+          "flagUpdates": { "f005_feather_found": "true" }
+        }
+      ]
+    },
+    {
+      "id": "c01_crack",
+      "type": "dialogue",
+      "speaker": "세결",
+      "lines": [
+        { "type": "dialogue", "speaker": "세결", "text": "고치지 마세요." },
+        { "type": "dialogue", "speaker": "세결", "text": "……금은 거짓말이 아니에요." },
+        { "type": "narration", "text": "중앙의 거울에 금이 가 있다.\n\n침묵이 무겁다." }
+      ],
+      "choices": [
+        {
+          "id": "CHO-C01-CRACK-A",
+          "label": "손을 댄다",
+          "nextSceneId": "c01_end",
+          "dispositionDelta": { "courage": 6, "curiosity": 4 },
+          "foreshadow": { "F-001": "spread" },
+          "flagUpdates": { "f001_crack_state": "spread" }
+        },
+        {
+          "id": "CHO-C01-CRACK-B",
+          "label": "지나친다",
+          "nextSceneId": "c01_end",
+          "dispositionDelta": { "order": 5, "doubt": 4 },
+          "foreshadow": { "F-001": "intact" },
+          "flagUpdates": { "f001_crack_state": "intact" }
+        },
+        {
+          "id": "CHO-C01-CRACK-C",
+          "label": "거울을 등진다",
+          "nextSceneId": "c01_end",
+          "dispositionDelta": { "empathy": 5, "freedom": 4 },
+          "foreshadow": { "F-001": "light_line" },
+          "flagUpdates": { "f001_crack_state": "light_line" }
+        }
+      ]
+    },
+    {
+      "id": "c01_end",
+      "type": "narrative",
+      "chapterComplete": true,
+      "lines": [
+        { "type": "narration", "text": "복도 끝의 문이 열린다." },
+        { "type": "narration", "text": "창밖 하늘이 조금 어두워진다.\n\n비가 올 것 같다." }
+      ]
+    }
+  ]
+}
