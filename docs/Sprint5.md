@@ -16,9 +16,9 @@
 
 ## 남은 작업 (Sprint 6 후보)
 
-- [ ] BGM/환경음 (Ch3+)
-- [ ] Prologue P-02 암시적 선택
-- [ ] Chapter 5 기획
+- [x] BGM/환경음 (Ch3+) — Sprint 6 프로토타입
+- [x] Prologue P-02 암시적 선택
+- [x] Chapter 5 기획
 
 ---
 

@@ -79,6 +79,24 @@ fun SettingsScreen(
         }
 
         Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "효과음",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MirrorColors.DialogueBody,
+            )
+            Switch(
+                checked = settings.soundEnabled,
+                onCheckedChange = viewModel::setSoundEnabled,
+            )
+        }
+
+        Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,

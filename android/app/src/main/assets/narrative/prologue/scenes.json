@@ -15,26 +15,51 @@
       "type": "narrative",
       "lines": [
         { "type": "narration", "text": "앞에 무언가 있다.\n\n문인 것 같다." },
-        { "type": "narration", "text": "손잡이가 보인다.\n\n가까이 가면——\n\n따뜻하다." }
+        { "type": "narration", "text": "손잡이가 보인다.\n\n가까이 가면——" }
       ],
+      "implicitChoice": {
+        "triggerLineIndex": 1,
+        "touchWindowMs": 5000,
+        "idleWindowMs": 15000,
+        "onTouch": {
+          "id": "IMP-P02",
+          "dispositionDelta": { "order": 3 },
+          "foreshadow": { "F-002": "warm" },
+          "flagUpdates": { "f002_door_handle": "warm" }
+        },
+        "onIdle": {
+          "id": "IMP-P02b",
+          "dispositionDelta": { "doubt": 4 },
+          "foreshadow": { "F-002": "cold" },
+          "flagUpdates": { "f002_door_handle": "cold" }
+        },
+        "reactionLines": [
+          {
+            "type": "narration",
+            "text": "따뜻하다.\n\n이상하다. 아무것도 모르는데, 손잡이만은 따뜻하다.",
+            "requireFlag": { "key": "f002_door_handle", "equals": "warm" }
+          },
+          {
+            "type": "narration",
+            "text": "차갑다.\n\n문 너머에서 바람이 아닌 것이 스친다.",
+            "requireFlag": { "key": "f002_door_handle", "equals": "cold" }
+          }
+        ]
+      },
       "choices": [
         {
           "id": "CHO-P02_OPEN",
           "label": "문을 연다",
           "nextSceneId": "p03",
-          "dispositionDelta": { "courage": 3 },
-          "foreshadow": { "F-002": "warm" },
-          "flagUpdates": { "f002_door_handle": "warm" }
+          "dispositionDelta": { "courage": 3 }
         },
         {
           "id": "CHO-P02_WAIT",
           "label": "조금 더 선다",
           "nextSceneId": "p03",
           "dispositionDelta": { "doubt": 3 },
-          "foreshadow": { "F-002": "cold" },
-          "flagUpdates": { "f002_door_handle": "cold" },
           "resultLines": [
-            { "type": "narration", "text": "차갑다.\n\n문 너머에서 바람이 아닌 것이 스친다." }
+            { "type": "narration", "text": "3초.\n\n아무 소리도 없다." }
           ]
         }
       ]

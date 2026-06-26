@@ -36,6 +36,7 @@ fun NarrativeScreen(
     onChoice: (ChoiceOption) -> Unit,
     onExit: (SceneExit) -> Unit,
     onOpenJournal: () -> Unit = {},
+    onImplicitTouch: () -> Unit = {},
 ) {
     val showJournalButton = !state.isLoading && state.error == null &&
         state.phase != NarrativePhase.CHAPTER_CARD
@@ -76,6 +77,36 @@ fun NarrativeScreen(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
                             onClick = onAdvanceState,
+                        ),
+                )
+            }
+        }
+        state.phase == NarrativePhase.IMPLICIT_WAIT -> {
+            val onImplicitState by rememberUpdatedState(onImplicitTouch)
+            val tapInteraction = remember { MutableInteractionSource() }
+            Box(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .padding(horizontal = 28.dp, vertical = 48.dp),
+                ) {
+                    state.currentLine?.let { line ->
+                        NarrativeLineText(
+                            line = line,
+                            sceneSpeaker = state.speaker,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zIndex(1f)
+                        .clickable(
+                            interactionSource = tapInteraction,
+                            indication = null,
+                            onClick = onImplicitState,
                         ),
                 )
             }

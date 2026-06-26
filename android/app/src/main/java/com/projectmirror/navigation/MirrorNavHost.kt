@@ -52,7 +52,13 @@ fun MirrorNavHost() {
 
         composable(Routes.NARRATIVE) {
             val viewModel: NarrativeViewModel = hiltViewModel()
+            val settingsViewModel: com.projectmirror.ui.screens.settings.SettingsViewModel = hiltViewModel()
             val state by viewModel.uiState.collectAsStateWithLifecycle()
+            val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
+
+            androidx.compose.runtime.LaunchedEffect(settings.soundEnabled) {
+                viewModel.setAudioEnabled(settings.soundEnabled)
+            }
 
             BackHandler {
                 navController.navigate(Routes.PAUSE)
@@ -65,6 +71,7 @@ fun MirrorNavHost() {
                     onChoice = { viewModel.selectChoice(it) },
                     onExit = { viewModel.selectExit(it) },
                     onOpenJournal = { navController.navigate(Routes.JOURNAL) },
+                    onImplicitTouch = { viewModel.onImplicitTouch() },
                 )
             }
         }

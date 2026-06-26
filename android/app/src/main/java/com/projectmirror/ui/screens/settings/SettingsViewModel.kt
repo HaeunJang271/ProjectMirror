@@ -33,4 +33,11 @@ class SettingsViewModel @Inject constructor(
             playerPreferences.updateSettings(current.copy(highContrast = enabled))
         }
     }
+
+    fun setSoundEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            val current = settings.value
+            playerPreferences.updateSettings(current.copy(soundEnabled = enabled))
+        }
+    }
 }

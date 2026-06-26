@@ -11,6 +11,7 @@ import com.projectmirror.data.local.entity.ForeshadowEntity
 import com.projectmirror.data.local.entity.SaveSlotEntity
 import com.projectmirror.domain.model.ChoiceOption
 import com.projectmirror.domain.model.DispositionWeights
+import com.projectmirror.domain.model.ImplicitChoiceOutcome
 import com.projectmirror.domain.model.SaveProgress
 import com.projectmirror.domain.model.SaveSlotInfo
 import com.projectmirror.domain.model.SaveSnapshot
@@ -110,6 +111,31 @@ class GameStateRepository @Inject constructor(
                 updatedAt = entity.updatedAt,
             )
         }
+
+    suspend fun applyImplicitChoice(
+        outcome: ImplicitChoiceOutcome,
+        chapterId: String,
+        sceneId: String,
+    ): WorldFlags {
+        recordChoice(outcome.id, chapterId)
+        if (outcome.dispositionDelta.isNotEmpty()) {
+            applyDispositionDelta(outcome.dispositionDelta)
+        }
+        val ambientDelta = dispositionAmbientDelta(outcome.dispositionDelta)
+        outcome.foreshadow.forEach { (flagId, state) ->
+            setForeshadow(flagId, state)
+        }
+        val flagUpdated = _worldFlags.value.applyFlagUpdates(outcome.flagUpdates)
+        val updated = flagUpdated.copy(
+            ambient = flagUpdated.ambient.copy(
+                colorTempShift = (flagUpdated.ambient.colorTempShift + ambientDelta)
+                    .coerceIn(-1f, 1f),
+            ),
+        )
+        _worldFlags.value = updated
+        autoSave(chapterId, sceneId, updated)
+        return updated
+    }
 
     suspend fun applyChoice(
         choice: ChoiceOption,

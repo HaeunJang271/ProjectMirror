@@ -23,6 +23,7 @@ data class SaveSlotInfo(
             "ch02" -> "Chapter 2 · 비의 자리"
             "ch03" -> "Chapter 3 · 깃털의 방"
             "ch04" -> "Chapter 4 · 거울의 물"
+            "ch05" -> "Chapter 5 · 달빛 복도"
             else -> chapterId
         }
     }

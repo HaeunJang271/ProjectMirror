@@ -29,6 +29,7 @@ data class NarrativeScene(
     val choices: List<ChoiceOption> = emptyList(),
     val exits: List<SceneExit> = emptyList(),
     val chapterComplete: Boolean = false,
+    val implicitChoice: ImplicitChoiceTrigger? = null,
 )
 
 @Serializable

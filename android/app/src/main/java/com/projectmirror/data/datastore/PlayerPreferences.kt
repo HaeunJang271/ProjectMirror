@@ -37,6 +37,7 @@ class PlayerPreferences @Inject constructor(
         PlayerSettings(
             subtitleScale = SubtitleScale.entries.getOrElse(prefs[Keys.SUBTITLE_SCALE] ?: 1) { SubtitleScale.M },
             highContrast = prefs[Keys.HIGH_CONTRAST] ?: false,
+            soundEnabled = prefs[Keys.SOUND_ENABLED] ?: true,
         )
     }
 
@@ -98,6 +99,7 @@ class PlayerPreferences @Inject constructor(
         context.dataStore.edit {
             it[Keys.SUBTITLE_SCALE] = settings.subtitleScale.ordinal
             it[Keys.HIGH_CONTRAST] = settings.highContrast
+            it[Keys.SOUND_ENABLED] = settings.soundEnabled
         }
     }
 
@@ -106,6 +108,7 @@ class PlayerPreferences @Inject constructor(
         val CURRENT_SCENE = stringPreferencesKey("current_scene")
         val SUBTITLE_SCALE = intPreferencesKey("subtitle_scale")
         val HIGH_CONTRAST = booleanPreferencesKey("high_contrast")
+        val SOUND_ENABLED = booleanPreferencesKey("sound_enabled")
         val EMPATHY = intPreferencesKey("empathy")
         val CURIOSITY = intPreferencesKey("curiosity")
         val ORDER = intPreferencesKey("order")

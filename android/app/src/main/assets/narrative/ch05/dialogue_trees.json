@@ -1,0 +1,54 @@
+{
+  "chapterId": "ch05",
+  "scenes": [
+    {
+      "id": "c05_intro",
+      "type": "narrative",
+      "nextSceneId": "c05_gaon",
+      "lines": [
+        { "type": "narration", "text": "복도 끝에 달빛이 있다.\n\n창문은 없는데, 빛만 있다." },
+        { "type": "narration", "text": "거울 표면에 초승달이 비친다.\n\n어제와 모양이 다르다." }
+      ]
+    },
+    {
+      "id": "c05_gaon",
+      "type": "dialogue",
+      "speaker": "가온",
+      "nextSceneId": "c05_imok",
+      "lines": [
+        { "type": "dialogue", "speaker": "가온", "text": "……밤이에요." },
+        { "type": "dialogue", "speaker": "가온", "text": "창은 여전히 닫혀 있어요.\n\n근데 밖 소리가 ……들려요." },
+        {
+          "type": "dialogue",
+          "speaker": "가온",
+          "text": "그때 깃털 ……아직 있어요.",
+          "requireFlag": { "key": "f005_feather_found", "equals": "true" }
+        }
+      ]
+    },
+    {
+      "id": "c05_imok",
+      "type": "dialogue",
+      "speaker": "이묵",
+      "nextSceneId": "c05_end",
+      "lines": [
+        { "type": "dialogue", "speaker": "이묵", "text": "서리가 다시 생겼어요." },
+        {
+          "type": "dialogue",
+          "speaker": "이묵",
+          "text": "적어둔 이름이 ……패턴이에요.\n\n금 간 거울과 같아요.",
+          "requireFlag": { "key": "f006_state", "equals": "planted" }
+        },
+        { "type": "dialogue", "speaker": "이묵", "text": "지우면 사라져요.\n\n남기면 ……기억이에요." }
+      ]
+    },
+    {
+      "id": "c05_end",
+      "type": "narrative",
+      "chapterComplete": true,
+      "lines": [
+        { "type": "narration", "text": "달빛이 한 칸 움직인다.\n\n아무도 말하지 않는다." }
+      ]
+    }
+  ]
+}

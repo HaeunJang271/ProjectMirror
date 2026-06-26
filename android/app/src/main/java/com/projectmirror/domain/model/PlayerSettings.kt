@@ -14,4 +14,5 @@ enum class SubtitleScale(val multiplier: Float) {
 data class PlayerSettings(
     val subtitleScale: SubtitleScale = SubtitleScale.M,
     val highContrast: Boolean = false,
+    val soundEnabled: Boolean = true,
 )
