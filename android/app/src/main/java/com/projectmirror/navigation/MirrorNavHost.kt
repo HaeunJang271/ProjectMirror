@@ -48,9 +48,8 @@ fun MirrorNavHost() {
 
             LaunchedEffect(backStackEntry.id) {
                 viewModel.navEvents.collect { event ->
-                    val currentEntryId = backStackEntry.id
                     navController.navigate(Routes.narrative(event.chapterId, event.sceneId)) {
-                        popUpTo(currentEntryId) { inclusive = true }
+                        popUpTo(Routes.TITLE) { inclusive = false }
                         launchSingleTop = true
                     }
                 }

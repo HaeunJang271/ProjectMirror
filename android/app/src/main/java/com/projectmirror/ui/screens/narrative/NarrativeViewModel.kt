@@ -58,51 +58,60 @@ class NarrativeViewModel @Inject constructor(
 ) : ViewModel() {
 
     val chapterId: String = savedStateHandle.get<String>("chapterId") ?: "prologue"
-    private val sceneId: String = savedStateHandle.get<String>("sceneId") ?: "p01"
+    private var currentSceneId: String = savedStateHandle.get<String>("sceneId") ?: "p01"
 
     private var scene: NarrativeScene? = null
     private var afterResultSceneId: String? = null
 
-    private val _uiState = MutableStateFlow(NarrativeUiState(chapterId = chapterId, sceneId = sceneId))
+    private val _uiState = MutableStateFlow(
+        NarrativeUiState(chapterId = chapterId, sceneId = currentSceneId),
+    )
     val uiState: StateFlow<NarrativeUiState> = _uiState.asStateFlow()
 
     private val _navEvents = MutableSharedFlow<NarrativeNavEvent>(extraBufferCapacity = 1)
     val navEvents: SharedFlow<NarrativeNavEvent> = _navEvents.asSharedFlow()
 
     init {
-        loadScene()
+        loadScene(currentSceneId)
     }
 
-    private fun loadScene() {
+    private fun loadScene(sceneId: String) {
         viewModelScope.launch {
             val loaded = narrativeRepository.loadScene(chapterId, sceneId)
             if (loaded == null) {
-                _uiState.update { it.copy(isLoading = false, error = "Scene not found: $chapterId/$sceneId") }
+                _uiState.update {
+                    it.copy(isLoading = false, error = "Scene not found: $chapterId/$sceneId")
+                }
                 return@launch
             }
-            scene = loaded
-            afterResultSceneId = null
-            val phase = when {
-                loaded.type == "hub" && loaded.lines.isEmpty() && loaded.exits.isNotEmpty() ->
-                    NarrativePhase.HUB_EXITS
-                else -> NarrativePhase.LINES
-            }
-            _uiState.update {
-                it.copy(
-                    sceneId = loaded.id,
-                    speaker = loaded.speaker,
-                    displayLines = loaded.lines,
-                    lineIndex = 0,
-                    choices = loaded.choices,
-                    exits = loaded.exits,
-                    phase = phase,
-                    isLoading = false,
-                    error = null,
-                    chapterCardTitle = chapterCardTitle(loaded),
-                )
-            }
-            gameStateRepository.autoSave(chapterId, loaded.id)
+            applyScene(loaded)
         }
+    }
+
+    private suspend fun applyScene(loaded: NarrativeScene) {
+        scene = loaded
+        currentSceneId = loaded.id
+        afterResultSceneId = null
+        val phase = when {
+            loaded.type == "hub" && loaded.lines.isEmpty() && loaded.exits.isNotEmpty() ->
+                NarrativePhase.HUB_EXITS
+            else -> NarrativePhase.LINES
+        }
+        _uiState.update {
+            it.copy(
+                sceneId = loaded.id,
+                speaker = loaded.speaker,
+                displayLines = loaded.lines,
+                lineIndex = 0,
+                choices = loaded.choices,
+                exits = loaded.exits,
+                phase = phase,
+                isLoading = false,
+                error = null,
+                chapterCardTitle = chapterCardTitle(loaded),
+            )
+        }
+        gameStateRepository.autoSave(chapterId, loaded.id)
     }
 
     fun advance() {
@@ -112,7 +121,7 @@ class NarrativeViewModel @Inject constructor(
                 if (state.hasNextLine) {
                     _uiState.update { it.copy(lineIndex = it.lineIndex + 1) }
                 } else if (afterResultSceneId != null) {
-                    requestNavigation(chapterId, afterResultSceneId!!)
+                    goToScene(afterResultSceneId!!)
                     afterResultSceneId = null
                 } else {
                     finishLines()
@@ -121,7 +130,7 @@ class NarrativeViewModel @Inject constructor(
             NarrativePhase.CHAPTER_CARD -> {
                 val next = nextChapter(state.sceneId)
                 if (next != null) {
-                    requestNavigation(next.first, next.second)
+                    requestChapterNavigation(next.first, next.second)
                 }
             }
             else -> Unit
@@ -138,13 +147,13 @@ class NarrativeViewModel @Inject constructor(
             loaded.chapterComplete ->
                 _uiState.update { it.copy(phase = NarrativePhase.CHAPTER_CARD) }
             loaded.nextSceneId != null ->
-                requestNavigation(chapterId, loaded.nextSceneId)
+                goToScene(loaded.nextSceneId)
         }
     }
 
     fun selectChoice(choice: ChoiceOption) {
         viewModelScope.launch {
-            applyChoiceUseCase(choice, chapterId, sceneId)
+            applyChoiceUseCase(choice, chapterId, currentSceneId)
             if (choice.resultLines.isNotEmpty()) {
                 afterResultSceneId = choice.nextSceneId
                 _uiState.update {
@@ -156,19 +165,26 @@ class NarrativeViewModel @Inject constructor(
                     )
                 }
             } else {
-                requestNavigation(chapterId, choice.nextSceneId)
+                goToScene(choice.nextSceneId)
             }
         }
     }
 
     fun selectExit(exit: SceneExit) {
         viewModelScope.launch {
-            gameStateRepository.autoSave(chapterId, exit.sceneId)
-            requestNavigation(chapterId, exit.sceneId)
+            goToScene(exit.sceneId)
         }
     }
 
-    private fun requestNavigation(chapter: String, scene: String) {
+    private fun goToScene(sceneId: String) {
+        if (sceneId == currentSceneId) return
+        viewModelScope.launch {
+            val loaded = narrativeRepository.loadScene(chapterId, sceneId) ?: return@launch
+            applyScene(loaded)
+        }
+    }
+
+    private fun requestChapterNavigation(chapter: String, scene: String) {
         _navEvents.tryEmit(NarrativeNavEvent(chapter, scene))
     }
 

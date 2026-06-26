@@ -1,6 +1,7 @@
 package com.projectmirror.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,9 +14,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.unit.dp
 import com.projectmirror.domain.model.ChoiceOption
 import com.projectmirror.domain.model.SceneExit
@@ -117,16 +122,33 @@ fun NarrativeScreen(
             }
         }
         else -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(onClick = onAdvance)
-                    .padding(horizontal = 28.dp, vertical = 48.dp),
-                contentAlignment = Alignment.BottomStart,
-            ) {
-                state.currentLine?.let { line ->
-                    NarrativeLineText(line = line, sceneSpeaker = state.speaker)
+            val onAdvanceState by rememberUpdatedState(onAdvance)
+            val tapInteraction = remember { MutableInteractionSource() }
+            Box(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .padding(horizontal = 28.dp, vertical = 48.dp),
+                ) {
+                    state.currentLine?.let { line ->
+                        NarrativeLineText(
+                            line = line,
+                            sceneSpeaker = state.speaker,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
                 }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zIndex(1f)
+                        .clickable(
+                            interactionSource = tapInteraction,
+                            indication = null,
+                            onClick = onAdvanceState,
+                        ),
+                )
             }
         }
     }
