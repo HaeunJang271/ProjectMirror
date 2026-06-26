@@ -55,6 +55,7 @@ Android 1차 · PC 확장 · 장기 운영형 인디 프로젝트.
 | [Timeline.md](docs/Timeline.md) | 연대표, 챕터 타임라인 |
 | [DialogueGuide.md](docs/DialogueGuide.md) | 대사 톤·금지 표현 |
 | [PrologueScript.md](docs/PrologueScript.md) | Prologue 대사 초안 |
+| [Chapter2Script.md](docs/Chapter2Script.md) | Chapter 2 대사 초안 |
 
 ### 게임 설계
 
@@ -76,8 +77,16 @@ Android 1차 · PC 확장 · 장기 운영형 인디 프로젝트.
 
 | 문서 | 용도 |
 |------|------|
-| [Sprint1.md](docs/Sprint1.md) | 스프린트 계획 |
-| [Sprint1Review.md](docs/Sprint1Review.md) | Sprint 1 검토 결과 |
+| [Sprint1.md](docs/Sprint1.md) | Sprint 1 (완료) |
+| [Sprint2.md](docs/Sprint2.md) | Sprint 2 진행 |
+| [Sprint1Review.md](docs/Sprint1Review.md) | Sprint 1 검토 |
+
+### Android
+
+| 경로 | 용도 |
+|------|------|
+| [android/](android/) | Kotlin 소스 · Gradle |
+| [android/README.md](android/README.md) | 빌드·구조 |
 
 ### AI 프롬프트 (`prompts/`)
 
@@ -122,12 +131,11 @@ Android 1차 · PC 확장 · 장기 운영형 인디 프로젝트.
 | 항목 | 상태 |
 |------|------|
 | Sprint 1 | ✅ 완료 ([검토](docs/Sprint1Review.md)) |
-| Prologue 대사 | ✅ 초안 |
-| Chapter 1 | ✅ |
-| Chapter 2 「비의 자리」 | ✅ 개요 |
-| GDD · 상징 · QuestBible | ✅ v0.2 |
-| TechSpec · UIFlow | ✅ v0.1 |
-| **다음** | Sprint 2 — Android 스캐폴드, Ch2 대사, 아트/사운드 브리프 |
+| Prologue 대사 | ✅ [PrologueScript.md](docs/PrologueScript.md) |
+| Chapter 2 대사 | ✅ [Chapter2Script.md](docs/Chapter2Script.md) |
+| Ch1 아트/오디오 | ✅ [ArtGuide](docs/ArtGuide.md) · [AudioGuide](docs/AudioGuide.md) v0.2 |
+| Android 스캐폴드 | ✅ [android/](android/) |
+| **다음** | Ch1 JSON · Choice 연동 · Sprint 2 마무리 |
 
 ---
 
@@ -145,6 +153,7 @@ Jetpack Compose · Navigation · Room · DataStore · MVVM · Hilt
 ProjectMirror/
 ├── README.md
 ├── docs/          # 기획·설계 문서
+├── android/       # Android 앱 (Compose)
 └── prompts/       # AI 역할 프롬프트
 ```
 

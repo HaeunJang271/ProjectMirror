@@ -1,0 +1,28 @@
+{
+  "scenes": [
+    {
+      "id": "p01",
+      "nextSceneId": "p02",
+      "lines": [
+        { "type": "narration", "text": "눈을 떴다.\n\n어디인지 모른다.\n\n몸만 있다." },
+        { "type": "narration", "text": "기억이 없다.\n\n이름도." }
+      ]
+    },
+    {
+      "id": "p02",
+      "nextSceneId": "p03",
+      "lines": [
+        { "type": "narration", "text": "앞에 무언가 있다.\n\n문인 것 같다." },
+        { "type": "narration", "text": "손잡이가 보인다.\n\n가까이 가면——\n\n따뜻하다." }
+      ]
+    },
+    {
+      "id": "p03",
+      "nextSceneId": null,
+      "lines": [
+        { "type": "narration", "text": "문이 열린다.\n\n소리는 없다." },
+        { "type": "narration", "text": "빛이 새어 나온다.\n\n그 안에 누군가 서 있다.\n\n……나인가." }
+      ]
+    }
+  ]
+}

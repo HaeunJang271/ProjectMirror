@@ -168,5 +168,6 @@
 ## 연결
 
 - [PrologueScript.md](./PrologueScript.md)
+- [Chapter2Script.md](./Chapter2Script.md)
 - [StoryBible.md](./StoryBible.md) · [GDD.md](./GDD.md)
 - [TechSpec.md](./TechSpec.md) — choice ID 구현
