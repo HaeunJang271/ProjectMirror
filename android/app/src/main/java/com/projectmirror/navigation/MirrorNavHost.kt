@@ -12,7 +12,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.projectmirror.ui.screens.NarrativeScreen
 import com.projectmirror.ui.screens.TitleScreen
-import com.projectmirror.ui.screens.narrative.NarrativeNavEvent
 import com.projectmirror.ui.screens.narrative.NarrativeViewModel
 import com.projectmirror.ui.screens.title.TitleViewModel
 
@@ -44,22 +43,16 @@ fun MirrorNavHost() {
                 navArgument(Routes.SCENE_ID) { type = NavType.StringType },
             ),
         ) { backStackEntry ->
-            // 씬마다 별도 ViewModel — 공유 시 sceneId가 갱신되지 않아 무한 이동 발생
             val viewModel: NarrativeViewModel = hiltViewModel(backStackEntry)
             val state by viewModel.uiState.collectAsStateWithLifecycle()
-            val navEvent by viewModel.navEvent.collectAsStateWithLifecycle()
 
-            LaunchedEffect(navEvent) {
-                when (val event = navEvent) {
-                    is NarrativeNavEvent.Scene -> {
-                        val currentEntryId = backStackEntry.id
-                        navController.navigate(Routes.narrative(event.chapterId, event.sceneId)) {
-                            popUpTo(currentEntryId) { inclusive = true }
-                            launchSingleTop = true
-                        }
-                        viewModel.consumeNavEvent()
+            LaunchedEffect(backStackEntry.id) {
+                viewModel.navEvents.collect { event ->
+                    val currentEntryId = backStackEntry.id
+                    navController.navigate(Routes.narrative(event.chapterId, event.sceneId)) {
+                        popUpTo(currentEntryId) { inclusive = true }
+                        launchSingleTop = true
                     }
-                    null -> Unit
                 }
             }
 

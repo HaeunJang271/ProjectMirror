@@ -6,13 +6,15 @@ import androidx.lifecycle.viewModelScope
 import com.projectmirror.data.repository.GameStateRepository
 import com.projectmirror.data.repository.NarrativeRepository
 import com.projectmirror.domain.model.ChoiceOption
-import com.projectmirror.domain.model.NarrativeLine
 import com.projectmirror.domain.model.NarrativeScene
 import com.projectmirror.domain.model.SceneExit
 import com.projectmirror.domain.usecase.ApplyChoiceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,15 +27,16 @@ enum class NarrativePhase {
     CHAPTER_CARD,
 }
 
-sealed class NarrativeNavEvent {
-    data class Scene(val chapterId: String, val sceneId: String) : NarrativeNavEvent()
-}
+data class NarrativeNavEvent(
+    val chapterId: String,
+    val sceneId: String,
+)
 
 data class NarrativeUiState(
     val chapterId: String = "prologue",
     val sceneId: String = "p01",
     val speaker: String? = null,
-    val displayLines: List<NarrativeLine> = emptyList(),
+    val displayLines: List<com.projectmirror.domain.model.NarrativeLine> = emptyList(),
     val lineIndex: Int = 0,
     val choices: List<ChoiceOption> = emptyList(),
     val exits: List<SceneExit> = emptyList(),
@@ -42,7 +45,7 @@ data class NarrativeUiState(
     val error: String? = null,
     val chapterCardTitle: String? = null,
 ) {
-    val currentLine: NarrativeLine? = displayLines.getOrNull(lineIndex)
+    val currentLine: com.projectmirror.domain.model.NarrativeLine? = displayLines.getOrNull(lineIndex)
     val hasNextLine: Boolean = lineIndex < displayLines.lastIndex
 }
 
@@ -63,17 +66,11 @@ class NarrativeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(NarrativeUiState(chapterId = chapterId, sceneId = sceneId))
     val uiState: StateFlow<NarrativeUiState> = _uiState.asStateFlow()
 
-    private val _navEvent = MutableStateFlow<NarrativeNavEvent?>(null)
-    val navEvent: StateFlow<NarrativeNavEvent?> = _navEvent.asStateFlow()
-
-    private var isNavigating = false
+    private val _navEvents = MutableSharedFlow<NarrativeNavEvent>(extraBufferCapacity = 1)
+    val navEvents: SharedFlow<NarrativeNavEvent> = _navEvents.asSharedFlow()
 
     init {
         loadScene()
-    }
-
-    fun consumeNavEvent() {
-        _navEvent.value = null
     }
 
     private fun loadScene() {
@@ -115,7 +112,7 @@ class NarrativeViewModel @Inject constructor(
                 if (state.hasNextLine) {
                     _uiState.update { it.copy(lineIndex = it.lineIndex + 1) }
                 } else if (afterResultSceneId != null) {
-                    navigateTo(afterResultSceneId!!)
+                    requestNavigation(chapterId, afterResultSceneId!!)
                     afterResultSceneId = null
                 } else {
                     finishLines()
@@ -124,7 +121,7 @@ class NarrativeViewModel @Inject constructor(
             NarrativePhase.CHAPTER_CARD -> {
                 val next = nextChapter(state.sceneId)
                 if (next != null) {
-                    navigateTo(next.first, next.second)
+                    requestNavigation(next.first, next.second)
                 }
             }
             else -> Unit
@@ -141,7 +138,7 @@ class NarrativeViewModel @Inject constructor(
             loaded.chapterComplete ->
                 _uiState.update { it.copy(phase = NarrativePhase.CHAPTER_CARD) }
             loaded.nextSceneId != null ->
-                navigateTo(loaded.nextSceneId)
+                requestNavigation(chapterId, loaded.nextSceneId)
         }
     }
 
@@ -159,7 +156,7 @@ class NarrativeViewModel @Inject constructor(
                     )
                 }
             } else {
-                navigateTo(choice.nextSceneId)
+                requestNavigation(chapterId, choice.nextSceneId)
             }
         }
     }
@@ -167,16 +164,12 @@ class NarrativeViewModel @Inject constructor(
     fun selectExit(exit: SceneExit) {
         viewModelScope.launch {
             gameStateRepository.autoSave(chapterId, exit.sceneId)
-            navigateTo(exit.sceneId)
+            requestNavigation(chapterId, exit.sceneId)
         }
     }
 
-    private fun navigateTo(sceneId: String) = navigateTo(chapterId, sceneId)
-
-    private fun navigateTo(chapter: String, scene: String) {
-        if (isNavigating) return
-        isNavigating = true
-        _navEvent.value = NarrativeNavEvent.Scene(chapter, scene)
+    private fun requestNavigation(chapter: String, scene: String) {
+        _navEvents.tryEmit(NarrativeNavEvent(chapter, scene))
     }
 
     private fun chapterCardTitle(loaded: NarrativeScene): String? = when (loaded.id) {
