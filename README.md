@@ -129,3 +129,15 @@ ProjectMirror/
 Android (1차) · PC (확장)
 
 기술 스택: Jetpack Compose · Navigation · Room · DataStore · MVVM · Hilt
+
+---
+
+## 현재 진행 (Sprint 1)
+
+| 항목 | 상태 |
+|------|------|
+| Sprint 1 계획 | ✅ [docs/Sprint1.md](docs/Sprint1.md) |
+| Chapter 1 (첫 반사) | ✅ NPC 3명, 장소 4곳 |
+| GDD 선택 시스템 | ✅ v0.2 |
+| 상징 10종 | ✅ 확정 |
+| 다음 | Sprint 1 검토 → Chapter 2 |
