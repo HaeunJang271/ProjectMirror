@@ -15,9 +15,9 @@
 
 ---
 
-## 남은 작업 (Sprint 3)
+## 남은 작업 (Sprint 3로 이관)
 
-- [ ] Chapter 2 JSON (Chapter2Script 반영)
+- [x] Chapter 2 JSON → [Sprint3.md](./Sprint3.md)
 - [ ] Journal 화면
 - [ ] Ambient 연출 (색온도)
 

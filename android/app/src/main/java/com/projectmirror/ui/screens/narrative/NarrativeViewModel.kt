@@ -191,6 +191,7 @@ class NarrativeViewModel @Inject constructor(
     private fun chapterCardTitle(loaded: NarrativeScene): String? = when (loaded.id) {
         "p06" -> if (loaded.chapterComplete) "Chapter 1\n첫 반사" else null
         "c01_end" -> if (loaded.chapterComplete) "Chapter 2\n비의 자리" else null
+        "c02_end" -> if (loaded.chapterComplete) "Chapter 3\n(준비 중)" else null
         else -> null
     }
 

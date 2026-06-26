@@ -4,8 +4,196 @@
     {
       "id": "c02_intro",
       "type": "narrative",
+      "nextSceneId": "c02_segyeol",
       "lines": [
-        { "type": "narration", "text": "비가 내린다.\n\n(Chapter 2 — 대사 에셋은 Chapter2Script.md 참조)" }
+        { "type": "narration", "text": "비가 내린다.\n\n소리는 있다.\n\n몸은 젖지 않는다." },
+        { "type": "narration", "text": "복도가 이어진다.\n\nCh1과 같은 석조인데——\n\n공기가 다르다." }
+      ]
+    },
+    {
+      "id": "c02_segyeol",
+      "type": "dialogue",
+      "speaker": "세결",
+      "nextSceneId": "c02_imuk",
+      "lines": [
+        { "type": "dialogue", "speaker": "세결", "text": "……창틀이 흔들려서요.\n\n가온 씨 자리." },
+        { "type": "dialogue", "speaker": "세결", "text": "고치는 건 쉬워요.\n\n……기억하는 건 어렵고." },
+        { "type": "narration", "text": "망치 소리가 한 번 났다.\n\n그리고 멈췄다." }
+      ]
+    },
+    {
+      "id": "c02_imuk",
+      "type": "dialogue",
+      "speaker": "이묵",
+      "lines": [
+        { "type": "dialogue", "speaker": "이묵", "text": "아, 왔어요.\n\n……비 오는 날엔 잘 오세요." },
+        { "type": "narration", "text": "창문에 서리가 맺혀 있다.\n\n이묵이 숨을 불어넣는다." },
+        { "type": "dialogue", "speaker": "이묵", "text": "적어두면 잠깐 남아요." },
+        { "type": "narration", "text": "글씨가 서서히 나타났다 사라진다.\n\n\"어제 복도\" 같은 단어." },
+        { "type": "dialogue", "speaker": "이묵", "text": "……비가 오면 사라져요." }
+      ],
+      "choices": [
+        {
+          "id": "CHO-C02-FROST-A",
+          "label": "서리를 지운다",
+          "nextSceneId": "c02_harin",
+          "dispositionDelta": { "order": 5, "self_centered": 3 },
+          "flagUpdates": { "frost_wiped": "true" },
+          "resultLines": [
+            { "type": "narration", "text": "손끝이 차갑다.\n\n자국이 남는다.\n\n글씨는 없다." },
+            { "type": "dialogue", "speaker": "이묵", "text": "……지우는 것도 기억이에요." }
+          ]
+        },
+        {
+          "id": "CHO-C02-FROST-B",
+          "label": "그대로 둔다",
+          "nextSceneId": "c02_harin",
+          "dispositionDelta": { "empathy": 4, "doubt": 3 },
+          "flagUpdates": { "frost_kept": "true" },
+          "resultLines": [
+            { "type": "dialogue", "speaker": "이묵", "text": "그래요.\n\n……남겨두면, 누군가 봤다는 것만 남아요." }
+          ]
+        },
+        {
+          "id": "CHO-C02-FROST-C",
+          "label": "자신의 이름을 적는다",
+          "nextSceneId": "c02_harin",
+          "dispositionDelta": { "sacrifice": 6 },
+          "foreshadow": { "F-006": "planted" },
+          "flagUpdates": { "frost_named": "true", "f006_state": "planted" },
+          "resultLines": [
+            { "type": "narration", "text": "이름을 적는다.\n\n한 글자——" },
+            { "type": "narration", "text": "비에 번진다.\n\n손에 남지 않는다." },
+            { "type": "dialogue", "speaker": "이묵", "text": "……적혔다가 없어진 거예요.\n\n당신은 여기 있지만." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c02_harin",
+      "type": "dialogue",
+      "speaker": "하린",
+      "lines": [
+        { "type": "dialogue", "speaker": "하린", "text": "아, 찾았다.\n\n……같이 있었잖아요." },
+        { "type": "dialogue", "speaker": "하린", "text": "아까 복도에서.\n\n당신 손 잡았잖아요." }
+      ],
+      "choices": [
+        {
+          "id": "CHO-C02-HARIN-A",
+          "label": "하린의 기억을 믿는다",
+          "nextSceneId": "c02_so",
+          "dispositionDelta": { "empathy": 5 },
+          "flagUpdates": { "harin_believed": "true" },
+          "resultLines": [
+            { "type": "dialogue", "speaker": "하린", "text": "……그렇죠?\n\n기억나죠." }
+          ]
+        },
+        {
+          "id": "CHO-C02-HARIN-B",
+          "label": "\"그건 내 기억이 아니야\"",
+          "nextSceneId": "c02_so",
+          "dispositionDelta": { "doubt": 6, "courage": 3 },
+          "flagUpdates": { "harin_denied": "true" },
+          "resultLines": [
+            { "type": "dialogue", "speaker": "하린", "text": "……그래요?" },
+            { "type": "narration", "text": "침묵." },
+            { "type": "dialogue", "speaker": "하린", "text": "그럼 제가 기억한 건——\n\n누구 거예요?" }
+          ]
+        },
+        {
+          "id": "CHO-C02-HARIN-C",
+          "label": "대답하지 않는다",
+          "nextSceneId": "c02_so",
+          "dispositionDelta": { "order": 4 },
+          "flagUpdates": { "harin_silent": "true" },
+          "resultLines": [
+            { "type": "dialogue", "speaker": "하린", "text": "……말 안 해도 돼요." },
+            { "type": "narration", "text": "빗소리만 커진다." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c02_so",
+      "type": "dialogue",
+      "speaker": "소",
+      "lines": [
+        { "type": "dialogue", "speaker": "소", "text": "이쪽은 잠겨 있었어요.\n\n문이 열렸네요." },
+        { "type": "dialogue", "speaker": "소", "text": "……관리인이라고 부르는 사람은 없어요.\n\n있었다면, 전에요." }
+      ],
+      "choices": [
+        {
+          "id": "CHO-C02-SO-ASK",
+          "label": "\"당신은 누구예요?\"",
+          "nextSceneId": "c02_gap",
+          "dispositionDelta": { "curiosity": 4 },
+          "flagUpdates": { "so_asked": "true" },
+          "resultLines": [
+            { "type": "dialogue", "speaker": "소", "text": "안내하는 사람이에요.\n\n……안내 받고 싶지 않으면, 안 받아도 돼요." },
+            { "type": "narration", "text": "얼굴이 잘 기억나지 않는다.\n\n열쇠 소리만 남는다." }
+          ]
+        },
+        {
+          "id": "CHO-C02-SO-PASS",
+          "label": "지나친다",
+          "nextSceneId": "c02_gap",
+          "dispositionDelta": { "doubt": 3 },
+          "flagUpdates": { "so_passed": "true" }
+        }
+      ]
+    },
+    {
+      "id": "c02_gap",
+      "type": "narrative",
+      "lines": [
+        { "type": "narration", "text": "복도 끝.\n\n방 하나." },
+        { "type": "narration", "text": "바닥에 물이 고여 있다.\n\n얕다." },
+        { "type": "narration", "text": "비친다." }
+      ],
+      "choices": [
+        {
+          "id": "CHO-C02-GAP-A",
+          "label": "웅덩이를 바라본다",
+          "nextSceneId": "c02_end",
+          "dispositionDelta": { "curiosity": 5 },
+          "flagUpdates": { "puddle_seen": "true" },
+          "resultLines": [
+            { "type": "narration", "text": "얼굴이 있다.\n\n익숙하고 낯설다." },
+            { "type": "narration", "text": "깜빡이면——\n\n물결이 일고, 흐릿해진다." }
+          ]
+        },
+        {
+          "id": "CHO-C02-GAP-B",
+          "label": "눈을 감는다",
+          "nextSceneId": "c02_end",
+          "dispositionDelta": { "doubt": 5 },
+          "flagUpdates": { "puddle_refused": "true" },
+          "resultLines": [
+            { "type": "narration", "text": "빗소리.\n\n발밑의 물소리." },
+            { "type": "narration", "text": "눈을 뜨면\n\n웅덩이는 맑다." }
+          ]
+        },
+        {
+          "id": "CHO-C02-GAP-C",
+          "label": "손을 담근다",
+          "nextSceneId": "c02_end",
+          "dispositionDelta": { "courage": 6, "empathy": 3 },
+          "foreshadow": { "F-006": "touched" },
+          "flagUpdates": { "puddle_touched": "true" },
+          "resultLines": [
+            { "type": "narration", "text": "차갑다." },
+            { "type": "narration", "text": "손을 들면\n\n물방울만 있다.\n\n얼굴은 없다." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c02_end",
+      "type": "narrative",
+      "chapterComplete": true,
+      "lines": [
+        { "type": "narration", "text": "비가 그친다." },
+        { "type": "narration", "text": "젖은 자리만 남는다." }
       ]
     }
   ]

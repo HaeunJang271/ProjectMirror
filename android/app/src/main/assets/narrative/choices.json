@@ -66,6 +66,72 @@
       "chapterId": "ch01",
       "sceneId": "c01_crack",
       "label": "거울을 등진다"
+    },
+    {
+      "id": "CHO-C02-FROST-A",
+      "chapterId": "ch02",
+      "sceneId": "c02_imuk",
+      "label": "서리를 지운다"
+    },
+    {
+      "id": "CHO-C02-FROST-B",
+      "chapterId": "ch02",
+      "sceneId": "c02_imuk",
+      "label": "그대로 둔다"
+    },
+    {
+      "id": "CHO-C02-FROST-C",
+      "chapterId": "ch02",
+      "sceneId": "c02_imuk",
+      "label": "자신의 이름을 적는다"
+    },
+    {
+      "id": "CHO-C02-HARIN-A",
+      "chapterId": "ch02",
+      "sceneId": "c02_harin",
+      "label": "하린의 기억을 믿는다"
+    },
+    {
+      "id": "CHO-C02-HARIN-B",
+      "chapterId": "ch02",
+      "sceneId": "c02_harin",
+      "label": "그건 내 기억이 아니야"
+    },
+    {
+      "id": "CHO-C02-HARIN-C",
+      "chapterId": "ch02",
+      "sceneId": "c02_harin",
+      "label": "대답하지 않는다"
+    },
+    {
+      "id": "CHO-C02-SO-ASK",
+      "chapterId": "ch02",
+      "sceneId": "c02_so",
+      "label": "당신은 누구예요?"
+    },
+    {
+      "id": "CHO-C02-SO-PASS",
+      "chapterId": "ch02",
+      "sceneId": "c02_so",
+      "label": "지나친다"
+    },
+    {
+      "id": "CHO-C02-GAP-A",
+      "chapterId": "ch02",
+      "sceneId": "c02_gap",
+      "label": "웅덩이를 바라본다"
+    },
+    {
+      "id": "CHO-C02-GAP-B",
+      "chapterId": "ch02",
+      "sceneId": "c02_gap",
+      "label": "눈을 감는다"
+    },
+    {
+      "id": "CHO-C02-GAP-C",
+      "chapterId": "ch02",
+      "sceneId": "c02_gap",
+      "label": "손을 담근다"
     }
   ]
 }
